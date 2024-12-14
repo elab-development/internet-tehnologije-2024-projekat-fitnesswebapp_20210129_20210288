@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('progress', function (Blueprint $table) {
-            $table->dropColumn('deprecated_column');
+            if (Schema::hasColumn('progress', 'deprecated_column')) {
+                $table->dropColumn('deprecated_column');
+            }
         });
     }
 
