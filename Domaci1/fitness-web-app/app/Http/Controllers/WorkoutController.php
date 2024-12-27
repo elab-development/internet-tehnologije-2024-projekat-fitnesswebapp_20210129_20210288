@@ -41,12 +41,16 @@ class WorkoutController extends Controller
         $workout = Workout::findOrFail($id);
 
         $validated = $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-        ]);
-
-        $workout->update($validated);
-        return response()->json($workout);
+            'duration' => 'required|integer|min:1',
+            'calories_burned' => 'required|integer|min:1',
+            ]);
+            
+            $workout->update($validated);
+            
+            return response()->json($workout);
     }
 
     // DELETE /api/workouts/{id} - Briše trening
