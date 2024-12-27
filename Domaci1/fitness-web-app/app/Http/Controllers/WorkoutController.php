@@ -4,61 +4,103 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Workout;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class WorkoutController extends Controller
 {
-    // GET /api/workouts - Prikazuje sve treninge
-    public function index()
-    {
-        return Workout::all();
+// GET /api/workouts
+public function index()
+{
+$workouts = Workout::all();
+
+return response()->json([
+'status' => 'success',
+'data' => $workouts
+], 200);
+}
+
+// GET /api/workouts/{id}
+public function show($id)
+{
+try {
+$workout = Workout::findOrFail($id);
+
+return response()->json([
+'status' => 'success',
+'data' => $workout
+], 200);
+} catch (ModelNotFoundException $e) {
+return response()->json([
+'status' => 'error',
+'message' => 'Workout not found'
+], 404);
+}
+}
+
+// POST /api/workouts
+public function store(Request $request)
+{
+$validated = $this->validateWorkout($request);
+
+$workout = Workout::create($validated);
+
+return response()->json([
+'status' => 'success',
+'data' => $workout
+], 201);
+}
+
+// PUT /api/workouts/{id}
+public function update(Request $request, $id)
+{
+try {
+$workout = Workout::findOrFail($id);
+
+$validated = $this->validateWorkout($request);
+
+$workout->update($validated);
+
+return response()->json([
+'status' => 'success',
+'data' => $workout
+], 200);
+} catch (ModelNotFoundException $e) {
+return response()->json([
+'status' => 'error',
+'message' => 'Workout not found'
+], 404);
+}
+}
+
+// DELETE /api/workouts/{id}
+public function destroy($id)
+{
+try {
+$workout = Workout::findOrFail($id);
+
+$workout->delete();
+
+return response()->json([
+'status' => 'success',
+'message' => 'Workout deleted'
+], 200);
+} catch (ModelNotFoundException $e) {
+return response()->json([
+'status' => 'error',
+'message' => 'Workout not found'
+], 404);
+}
+}
+
+// Dodatna metoda za validaciju - smanjeno ponavljanje koda
+private function validateWorkout(Request $request)
+{
+return $request->validate([
+'user_id' => 'required|integer|exists:users,id',
+'name' => 'required|string|max:255',
+'description' => 'nullable|string',
+'duration' => 'required|integer|min:1',
+'calories_burned' => 'required|integer|min:1',
+     ]);
     }
-
-    // GET /api/workouts/{id} - Prikazuje određeni trening
-    public function show($id)
-    {
-        return Workout::findOrFail($id);
-    }
-
-    // POST /api/workouts - Kreira novi trening
-    public function store(Request $request)
-    {
-    $validated = $request->validate([
-    'user_id' => 'required|integer|exists:users,id', // Proverava da li postoji korisnik sa datim ID-om
-    'name' => 'required|string|max:255',
-    'description' => 'nullable|string',
-    'duration' => 'required|integer|min:1', // Očekuje trajanje u minutima
-    'calories_burned' => 'required|integer|min:1', // Očekuje kalorije koje su sagorevane
-    ]);
-    
-    $workout = Workout::create($validated);
-    
-    return response()->json($workout, 201);
-    }
-
-    // PUT /api/workouts/{id} - Ažurira postojeći trening
-    public function update(Request $request, $id)
-    {
-        $workout = Workout::findOrFail($id);
-
-        $validated = $request->validate([
-            'user_id' => 'required|integer|exists:users,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'duration' => 'required|integer|min:1',
-            'calories_burned' => 'required|integer|min:1',
-            ]);
-            
-            $workout->update($validated);
-            
-            return response()->json($workout);
-    }
-
-    // DELETE /api/workouts/{id} - Briše trening
-    public function destroy($id)
-    {
-        $workout = Workout::findOrFail($id);
-        $workout->delete();
-        return response()->json(null, 204);
-    }
-
 }
