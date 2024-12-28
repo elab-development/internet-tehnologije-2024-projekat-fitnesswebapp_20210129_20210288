@@ -103,4 +103,54 @@ return $request->validate([
 'calories_burned' => 'required|integer|min:1',
      ]);
     }
+
+// Dodata nova metoda za startovanje treninga
+public function startWorkout($id)
+{
+$workout = Workout::find($id);
+
+if (!$workout) {
+return response()->json(['message' => 'Workout not found'], 404);
 }
+
+// Logika za pokretanje treninga
+$workout->status = 'started';
+$workout->save();
+
+return response()->json([
+'message' => 'Workout started',
+'data' => $workout
+], 200);
+}
+
+// Dodata metoda za prikaz treninga korisnika
+public function getUserWorkouts($id)
+{
+$workouts = Workout::where('user_id', $id)->get();
+
+if ($workouts->isEmpty()) {
+return response()->json(['message' => 'No workouts found for this user'], 404);
+}
+
+return response()->json([
+'message' => 'Workouts retrieved successfully',
+'data' => $workouts
+], 200);
+}
+
+// Dodata metoda za brisanje treninga korisnika
+public function deleteUserWorkouts($id)
+{
+$workouts = Workout::where('user_id', $id);
+
+if ($workouts->count() == 0) {
+return response()->json(['message' => 'No workouts found for this user'], 404);
+}
+
+$workouts->delete();
+
+return response()->json(['message' => 'All workouts for the user have been deleted'], 200);
+}
+
+}
+
