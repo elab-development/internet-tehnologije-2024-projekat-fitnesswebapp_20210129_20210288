@@ -15,5 +15,6 @@ class Workout extends Model
         'description',
         'duration',
         'calories_burned',
+        'status',
     ];
 }
