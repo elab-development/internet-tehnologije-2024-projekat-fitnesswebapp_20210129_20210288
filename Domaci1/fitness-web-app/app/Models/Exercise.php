@@ -12,8 +12,7 @@ class Exercise extends Model
     protected $fillable = [
         'name',
         'description',
-        'duration',
-        'calories_burned',
+        'reps_or_time',
         'type',
         'workout_id',
     ];

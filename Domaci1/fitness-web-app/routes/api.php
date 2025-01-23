@@ -9,8 +9,8 @@ use App\Http\Controllers\ExerciseController;
 // Rute za Exercise API - CRUD operacije
 Route::post('/exercises', [ExerciseController::class, 'store']);
 
-
-
+// Rute za Exercise API - CRUD operacije
+Route::apiResource('exercises', ExerciseController::class);
 
 // Breeze autentifikacione rute
 Route::post('/register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'store']);
@@ -50,4 +50,3 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Rute za brisanje svih treninga korisnika
     Route::delete('/users/{id}/workouts', [WorkoutController::class, 'deleteUserWorkouts']);
 });
-

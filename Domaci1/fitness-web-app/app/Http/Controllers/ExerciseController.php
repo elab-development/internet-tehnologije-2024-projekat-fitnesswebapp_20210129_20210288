@@ -2,50 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Exercise;
 use Illuminate\Http\Request;
+use App\Models\Exercise;
 
 class ExerciseController extends Controller
 {
     /**
-     * Prikazuje sve vežbe.
+     * Prikaz svih vežbi.
      */
     public function index()
     {
-        $exercises = Exercise::all();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $exercises
-        ], 200);
+        return response()->json(Exercise::all(), 200);
     }
 
     /**
-     * Kreira novu vežbu.
+     * Kreiranje nove vežbe.
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'duration' => 'required|integer|min:1',
-            'calories_burned' => 'nullable|integer|min:1',
+            'reps_or_time' => 'required|integer',
             'type' => 'required|string|max:255',
             'workout_id' => 'required|exists:workouts,id',
         ]);
 
-
-
-        $exercise = Exercise::create($validated);
+        $exercise = Exercise::create($validatedData);
 
         return response()->json([
             'message' => 'Exercise successfully created.',
-            'data' => $exercise,
+            'exercise' => $exercise,
         ], 201);
     }
 
     /**
-     * Prikazuje jednu vežbu.
+     * Prikaz određene vežbe.
      */
     public function show($id)
     {
@@ -53,19 +45,15 @@ class ExerciseController extends Controller
 
         if (!$exercise) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Exercise not found'
+                'message' => 'Exercise not found.',
             ], 404);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $exercise
-        ], 200);
+        return response()->json($exercise, 200);
     }
 
     /**
-     * Ažurira postojeću vežbu.
+     * Ažuriranje vežbe.
      */
     public function update(Request $request, $id)
     {
@@ -73,29 +61,28 @@ class ExerciseController extends Controller
 
         if (!$exercise) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Exercise not found'
+                'message' => 'Exercise not found.',
             ], 404);
         }
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'duration' => 'sometimes|integer|min:1',
-            'calories_burned' => 'nullable|integer|min:0',
-            'type' => 'nullable|string|max:255',
+            'reps_or_time' => 'sometimes|required|integer',
+            'type' => 'sometimes|required|string|max:255',
+            'workout_id' => 'sometimes|required|exists:workouts,id',
         ]);
 
-        $exercise->update($validated);
+        $exercise->update($validatedData);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $exercise
+            'message' => 'Exercise successfully updated.',
+            'exercise' => $exercise,
         ], 200);
     }
 
     /**
-     * Briše vežbu.
+     * Brisanje vežbe.
      */
     public function destroy($id)
     {
@@ -103,16 +90,14 @@ class ExerciseController extends Controller
 
         if (!$exercise) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Exercise not found'
+                'message' => 'Exercise not found.',
             ], 404);
         }
 
         $exercise->delete();
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Exercise deleted successfully'
+            'message' => 'Exercise successfully deleted.',
         ], 200);
     }
 }
