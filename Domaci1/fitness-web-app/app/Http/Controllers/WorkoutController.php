@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Workout;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -47,8 +48,8 @@ class WorkoutController extends Controller
             'calories_burned' => 'required|integer|min:1',
         ]);
 
-        // Automatski dodaj user_id iz autentifikacije
-        $validated['user_id'] = auth()->id();
+        // Ispravljena linija: auth()->user()->id
+        $validated['user_id'] = Auth::id();
 
         $workout = Workout::create($validated);
 
@@ -90,7 +91,6 @@ class WorkoutController extends Controller
     {
         try {
             $workout = Workout::findOrFail($id);
-
             $workout->delete();
 
             return response()->json([
@@ -114,7 +114,6 @@ class WorkoutController extends Controller
             return response()->json(['message' => 'Workout not found'], 404);
         }
 
-        // Logika za pokretanje treninga
         $workout->status = 'started';
         $workout->save();
 
@@ -127,7 +126,14 @@ class WorkoutController extends Controller
     // Get User Workouts
     public function getUserWorkouts()
     {
-        $userId = auth()->id();
+        // Ispravljena linija: auth()->user()->id
+        $userId = Auth::id();
+
+
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $workouts = Workout::where('user_id', $userId)->get();
 
         if ($workouts->isEmpty()) {
@@ -143,14 +149,19 @@ class WorkoutController extends Controller
     // Delete User Workouts
     public function deleteUserWorkouts()
     {
-        $userId = auth()->id();
-        $workouts = Workout::where('user_id', $userId);
+        // Ispravljena linija: auth()->user()->id
+        $userId = Auth::id();
 
-        if ($workouts->count() == 0) {
-            return response()->json(['message' => 'No workouts found for this user'], 404);
+
+        if (!$userId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $workouts->delete();
+        $deletedCount = Workout::where('user_id', $userId)->delete();
+
+        if ($deletedCount == 0) {
+            return response()->json(['message' => 'No workouts found for this user'], 404);
+        }
 
         return response()->json(['message' => 'All workouts for the user have been deleted'], 200);
     }

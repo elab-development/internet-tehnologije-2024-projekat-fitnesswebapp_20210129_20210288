@@ -28,5 +28,55 @@ class GoalController extends Controller
             'data' => $goal,
         ], 201);
     }
+
+    public function index()
+    {
+        $goals = Goal::all(); 
+        return response()->json($goals, 200); 
+    }
+
+    public function show($id)
+    {
+        $goal = Goal::find($id);
+
+        if (!$goal) {
+            return response()->json(['message' => 'Goal not found'], 404);
+        }
+
+        return response()->json($goal);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $goal = Goal::find($id);
+
+        if (!$goal) {
+            return response()->json(['message' => 'Goal not found'], 404);
+        }
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'deadline' => 'nullable|date',
+            'status' => 'nullable|string',
+        ]);
+
+        $goal->update($validatedData);
+
+        return response()->json($goal);
+    }
+
+    public function destroy($id)
+    {
+        $goal = Goal::find($id);
+
+        if (!$goal) {
+            return response()->json(['message' => 'Goal not found'], 404);
+        }
+
+        $goal->delete();
+
+        return response()->json(['message' => 'Goal deleted'], 200);
+    }
 }
 

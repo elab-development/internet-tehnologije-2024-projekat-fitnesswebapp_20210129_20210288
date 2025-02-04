@@ -5,48 +5,45 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ExerciseController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 
-// Rute za Exercise API - CRUD operacije
-Route::post('/exercises', [ExerciseController::class, 'store']);
-
-// Rute za Exercise API - CRUD operacije
-Route::apiResource('exercises', ExerciseController::class);
-
-// Breeze autentifikacione rute
+// Rute za autentifikaciju (Breeze)
 Route::post('/register', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'store']);
 Route::post('/login', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'store']);
 Route::middleware('auth:sanctum')->post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy']);
 Route::post('/forgot-password', [\App\Http\Controllers\Auth\PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [\App\Http\Controllers\Auth\NewPasswordController::class, 'store']);
 Route::post('/email/verification-notification', [\App\Http\Controllers\Auth\EmailVerificationNotificationController::class, 'store']);
-Route::get('/verify-email/{id}/{hash}', [\App\Http\Controllers\Auth\VerifyEmailController::class, '__invoke'])->name('verification.verify');
-
-// Rute za Goal API - CRUD operacije
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::apiResource('goals', GoalController::class);
-});
 
 // Ruta za autentifikovanog korisnika
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API test ruta za proveru
+// API test ruta
 Route::get('/test', function () {
     return response()->json(['message' => 'API is working!']);
 });
 
-// Zaštićene rute za autentifikovane korisnike
+// **Workouts Rute** (Za članove)
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Rute za Workout API - CRUD operacije
     Route::apiResource('workouts', WorkoutController::class);
-
-    // Ruta za startovanje treninga
     Route::post('/workouts/{id}/start', [WorkoutController::class, 'startWorkout']);
 
-    // Rute za prikaz treninga korisnika
+    // **Ruta za dobijanje svih treninga korisnika**
     Route::get('/users/{id}/workouts', [WorkoutController::class, 'getUserWorkouts']);
 
-    // Rute za brisanje svih treninga korisnika
+    // **Ruta za brisanje svih treninga korisnika**
     Route::delete('/users/{id}/workouts', [WorkoutController::class, 'deleteUserWorkouts']);
+});
+
+// **Rute za Admina**
+Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/users', [AdminController::class, 'listUsers']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+
+    // Admin može upravljati ciljevima (goals)
+    Route::apiResource('goals', GoalController::class);
 });
