@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\GoalController;
+use App\Http\Controllers\WeatherController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,4 +24,8 @@ Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . 
     Route::get('/admin', function () {
         return view('admin.dashboard');
     });
+
+    
 });
+
+Route::get('/weather/{city}', [WeatherController::class, 'getWeather']);

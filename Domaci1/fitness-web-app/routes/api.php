@@ -7,6 +7,7 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\AdminController;
 
+
 // Rute dostupne SVIMA (uključujući goste)
 Route::get('/workouts', [WorkoutController::class, 'index']);
 Route::get('/workouts/{id}', [WorkoutController::class, 'show']);
