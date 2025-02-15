@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->date('target_date')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

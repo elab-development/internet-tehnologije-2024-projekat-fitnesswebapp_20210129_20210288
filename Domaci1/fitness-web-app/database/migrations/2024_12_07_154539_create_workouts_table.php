@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name'); // Naziv vežbe (npr. Čučnjevi)
             $table->text('description'); // Opis vežbe
             $table->integer('duration'); // Trajanje vežbe u minutima
-            $table->integer('calories_burned'); // Broj sagorelih kalorija
+            $table->integer('calories_burned')->nullable(); // Broj sagorelih kalorija
             $table->timestamps();
         });
     }
