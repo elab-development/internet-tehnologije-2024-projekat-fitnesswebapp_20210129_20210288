@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    // Registracija korisnika
     public function register(Request $request)
     {
-        $request->validate([
+        // Validacija unosa
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|string|in:admin,member'
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:admin,member,guest',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        // Kreiranje korisnika
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -27,51 +31,46 @@ class AuthController extends Controller
             'role' => $request->role,
         ]);
 
-        // Event da Laravel zna da je korisnik registrovan
-        event(new Registered($user));
+        // Provera da li postoji metoda `createToken`
+        if (!method_exists($user, 'createToken')) {
+            return response()->json(['error' => 'Sanctum nije ispravno konfigurisan.'], 500);
+        }
 
-        // Generisanje API tokena
+        // Kreiranje API tokena
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user,
-            'token' => $token
+            'message' => 'User registered successfully',
+            'token' => $token,
+            'user' => $user
         ], 201);
     }
 
-    // Login korisnika
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.']
-            ]);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'message' => 'Login successful',
-            'user' => $user,
-            'token' => $token
-        ]);
+            'token' => $token,
+            'user' => $user
+        ], 200);
     }
 
-    // Logout korisnika
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->tokens()->delete();
-
-        return response()->json([
-            'message' => 'Logged out successfully'
-        ]);
+        \Auth::user()->tokens()->delete();
+        return response()->json(['message' => 'Logged out'], 200);
     }
 }

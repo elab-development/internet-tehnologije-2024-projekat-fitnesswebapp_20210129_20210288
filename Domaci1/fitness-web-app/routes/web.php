@@ -1,12 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WorkoutController;
+use App\Http\Controllers\GoalController;
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    return view('welcome');
 });
 
-Route::get('/verify-email/{id}/{hash}', [\App\Http\Controllers\Auth\VerifyEmailController::class, '__invoke'])->name('verification.verify');
+// Rute za guest korisnike (mogu videti samo javne podatke)
+Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':guest'])->group(function () {
+    Route::get('/workouts', [WorkoutController::class, 'index']);
+});
 
+// Rute za članove (mogu kreirati treninge)
+Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':member'])->group(function () {
+    Route::resource('workouts', WorkoutController::class);
+});
 
-require __DIR__.'/auth.php';
+// Rute za admina
+Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':admin'])->group(function () {
+    Route::get('/admin', function () {
+        return view('admin.dashboard');
+    });
+});
