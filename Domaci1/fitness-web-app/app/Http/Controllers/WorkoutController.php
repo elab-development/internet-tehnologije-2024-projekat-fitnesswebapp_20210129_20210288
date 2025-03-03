@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Workout;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\WorkoutResource;
 
 class WorkoutController extends Controller
 {
@@ -60,31 +61,23 @@ class WorkoutController extends Controller
     }
 
     // Ažuriranje postojećeg treninga
-    public function update(Request $request, $id)
-    {
-        try {
-            $workout = Workout::findOrFail($id);
-
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'duration' => 'required|integer|min:1',
-                'calories_burned' => 'required|integer|min:1',
-            ]);
-
-            $workout->update($validated);
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $workout
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Workout not found'
-            ], 404);
-        }
+    public function update(Request $request, Workout $workout)
+{
+    // Provjera da li trening pripada trenutnom korisniku
+    if ($workout->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
+        return response()->json(['message' => 'Unauthorized'], 403);
     }
+    
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'date' => 'required|date',
+    ]);
+
+    $workout->update($request->all());
+
+    return new WorkoutResource($workout);
+}
 
     // Brisanje treninga po ID-u
     public function destroy($id)

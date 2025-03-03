@@ -30,6 +30,12 @@ class User extends Authenticatable
         'password' => 'hashed',            // Lozinka se tretira kao hash
     ];
 
+    // Definiše vezu sa modelom Workout
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
     /**
      * Proverava da li je korisnik administrator
      */
