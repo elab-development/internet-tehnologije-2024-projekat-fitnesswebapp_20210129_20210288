@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Workout;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class WorkoutController extends Controller
 {
-    // GET /api/workouts
+    // Dohvatanje svih treninga
     public function index()
     {
         $workouts = Workout::all();
@@ -20,7 +20,7 @@ class WorkoutController extends Controller
         ], 200);
     }
 
-    // GET /api/workouts/{id}
+    // Dohvatanje treninga po ID-u
     public function show($id)
     {
         try {
@@ -38,7 +38,7 @@ class WorkoutController extends Controller
         }
     }
 
-    // POST /api/workouts
+    // Kreiranje novog treninga
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -48,7 +48,7 @@ class WorkoutController extends Controller
             'calories_burned' => 'required|integer|min:1',
         ]);
 
-        // Ispravljena linija: auth()->user()->id
+        // Dodavanje ID-a trenutnog korisnika
         $validated['user_id'] = Auth::id();
 
         $workout = Workout::create($validated);
@@ -59,7 +59,7 @@ class WorkoutController extends Controller
         ], 201);
     }
 
-    // PUT /api/workouts/{id}
+    // Ažuriranje postojećeg treninga
     public function update(Request $request, $id)
     {
         try {
@@ -86,7 +86,7 @@ class WorkoutController extends Controller
         }
     }
 
-    // DELETE /api/workouts/{id}
+    // Brisanje treninga po ID-u
     public function destroy($id)
     {
         try {
@@ -105,7 +105,7 @@ class WorkoutController extends Controller
         }
     }
 
-    // Start Workout
+    // Pokretanje treninga
     public function startWorkout($id)
     {
         $workout = Workout::find($id);
@@ -123,12 +123,10 @@ class WorkoutController extends Controller
         ], 200);
     }
 
-    // Get User Workouts
+    // Dohvatanje treninga određenog korisnika
     public function getUserWorkouts()
     {
-        // Ispravljena linija: auth()->user()->id
         $userId = Auth::id();
-
 
         if (!$userId) {
             return response()->json(['message' => 'Unauthorized'], 401);
@@ -146,12 +144,10 @@ class WorkoutController extends Controller
         ], 200);
     }
 
-    // Delete User Workouts
+    // Brisanje svih treninga korisnika
     public function deleteUserWorkouts()
     {
-        // Ispravljena linija: auth()->user()->id
         $userId = Auth::id();
-
 
         if (!$userId) {
             return response()->json(['message' => 'Unauthorized'], 401);

@@ -6,22 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 class ModifyDescriptionNullableInWorkoutsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::table('workouts', function (Blueprint $table) {
+            // Menjamo kolonu `description` da bude tipa `text` i dozvoljavamo joj da ima `NULL` vrednost
             $table->text('description')->nullable()->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::table('workouts', function (Blueprint $table) {
+            // Vraćamo kolonu `description` u stanje gde ne može biti `nullable`
             $table->text('description')->nullable(false)->change();
         });
     }

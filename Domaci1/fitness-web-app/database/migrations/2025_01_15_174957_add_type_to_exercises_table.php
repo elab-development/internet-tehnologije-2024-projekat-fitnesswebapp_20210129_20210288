@@ -6,23 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::table('exercises', function (Blueprint $table) {
-            $table->string('type')->nullable();
+            $table->string('type')->nullable(); // Dodaje kolonu 'type' koja može biti null
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::table('exercises', function (Blueprint $table) {
-            $table->dropColumn('type');
+            $table->dropColumn('type'); 
         });
     }
 };

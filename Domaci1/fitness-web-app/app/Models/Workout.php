@@ -6,20 +6,23 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ * Model za rad sa tabelom "workouts".
  *
- * @property int $id
- * @property int $user_id
- * @property string $name
- * @property string|null $description
- * @property int $duration
- * @property int $calories_burned
- * @property string $status
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Exercise> $exercises
- * @property-read int|null $exercises_count
- * @property-read \App\Models\User $user
+ * Ovaj model predstavlja trening korisnika. Svaki trening ima naziv, opis, trajanje,
+ * broj sagorenih kalorija, status i vezu sa korisnikom koji ga je kreirao.
+ *
+ * @property int $id - Jedinstveni identifikator treninga.
+ * @property int $user_id - ID korisnika koji je kreirao trening.
+ * @property string $name - Naziv treninga.
+ * @property string|null $description - Opis treninga (može biti null).
+ * @property int $duration - Trajanje treninga u minutima.
+ * @property int $calories_burned - Broj sagorenih kalorija tokom treninga.
+ * @property string $status - Status treninga (npr. "završen", "u toku").
+ * @property \Illuminate\Support\Carbon|null $created_at - Vreme kreiranja treninga.
+ * @property \Illuminate\Support\Carbon|null $updated_at - Vreme poslednje izmene treninga.
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Exercise> $exercises - Vežbe povezane sa ovim treningom.
+ * @property-read int|null $exercises_count - Broj vežbi povezanih sa ovim treningom.
+ * @property-read \App\Models\User $user - Korisnik koji je kreirao trening.
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Workout newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Workout newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Workout query()
@@ -38,24 +41,19 @@ class Workout extends Model
 {
     use HasFactory;
 
-    /**
-     * Polja koja su dozvoljena za masovno dodeljivanje.
-     *
-     * @var array
-     */
+    
     protected $fillable = [
-        'name',
-        'description',
-        'duration',
-        'calories_burned',
-        'status',
-        'user_id'
+        'name',          // Naziv treninga
+        'description',   // Opis treninga
+        'duration',     // Trajanje treninga u minutima
+        'calories_burned', // Broj sagorenih kalorija
+        'status',        // Status treninga
+        'user_id'       // ID korisnika koji je kreirao trening
     ];
 
     /**
-     * Veza sa korisnikom (User).
-     *
-     * Svaki trening pripada jednom korisniku.
+     * Definiše vezu sa modelom User.
+     * Jedan trening pripada jednom korisniku.
      */
     public function user()
     {
@@ -63,9 +61,8 @@ class Workout extends Model
     }
 
     /**
-     * Veza sa vežbama (Exercise).
-     *
-     * Svaki trening može imati više vežbi.
+     * Definiše vezu sa modelom Exercise.
+     * Jedan trening može imati više vežbi.
      */
     public function exercises()
     {

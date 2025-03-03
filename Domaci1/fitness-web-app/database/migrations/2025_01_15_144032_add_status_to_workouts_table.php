@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 class AddStatusToWorkoutsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
+    
     public function up()
     {
         Schema::table('workouts', function (Blueprint $table) {
-            $table->string('status')->default('pending')->after('calories_burned'); // Dodaj status kolonu sa default vrednošću
+            // Dodajemo kolonu `status` tipa string sa podrazumevanom vrednošću 'pending'
+            // Ova kolona će biti postavljena nakon kolone `calories_burned`
+            $table->string('status')->default('pending')->after('calories_burned');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
+    
     public function down()
     {
         Schema::table('workouts', function (Blueprint $table) {
+            // Uklanjamo kolonu `status` iz tabele
             $table->dropColumn('status');
         });
     }

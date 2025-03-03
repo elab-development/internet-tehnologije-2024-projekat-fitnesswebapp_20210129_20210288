@@ -7,27 +7,26 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Kreira tabelu 'users' u bazi podataka.
      */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-            
+            $table->id(); // Primarni ključ (autoinkrementalni ID)
+            $table->string('name'); // Ime korisnika
+            $table->string('email')->unique(); // Email (mora biti jedinstven)
+            $table->timestamp('email_verified_at')->nullable(); // Datum i vreme kada je email potvrđen (može biti NULL)
+            $table->string('password'); // Lozinka korisnika
+            $table->rememberToken(); // Token za "Zapamti me" funkcionalnost
+            $table->timestamps(); // Kolone 'created_at' i 'updated_at'
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Briše tabelu 'users' ako treba da se poništi migracija.
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('users'); // Briše tabelu ako postoji
     }
 };

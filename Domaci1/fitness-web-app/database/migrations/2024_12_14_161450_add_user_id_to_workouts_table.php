@@ -7,24 +7,30 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Pokreće migraciju – dodaje kolonu 'user_id' u tabelu 'workouts'
+     * i postavlja spoljni ključ koji povezuje treninge sa korisnicima.
      */
     public function up(): void
     {
         Schema::table('workouts', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->after('id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('user_id') // Dodajemo kolonu za povezivanje sa korisnicima
+                  ->after('id'); 
+
+            $table->foreign('user_id') // Definišemo spoljni ključ
+                  ->references('id') // Povezujemo sa 'id' kolonom u tabeli 'users'
+                  ->on('users')
+                  ->onDelete('cascade'); // Ako se korisnik obriše, brišu se i njegovi treninzi
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Poništava migraciju – uklanja spoljni ključ i briše kolonu 'user_id'.
      */
     public function down(): void
     {
         Schema::table('workouts', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn('user_id');
+            $table->dropForeign(['user_id']); // Prvo uklanjamo spoljni ključ
+            $table->dropColumn('user_id'); // Zatim brišemo kolonu
         });
     }
 };

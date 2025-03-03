@@ -7,22 +7,31 @@ use GuzzleHttp\Client;
 
 class WeatherController extends Controller
 {
+    /**
+     * Metoda koja dohvaća vremensku prognozu za određeni grad koristeći OpenWeatherMap API.
+     */
     public function getWeather($city)
     {
+        // Dohvatanje API ključa iz konfiguracionih fajlova
         $apiKey = config('services.openweathermap.key');
+        
+        // Kreiranje HTTP klijenta pomoću Guzzle biblioteke
         $client = new Client([
-            'verify' => false, 
+            'verify' => false, // Isključivanje verifikacije SSL sertifikata
         ]);
 
+        // Slanje GET zahteva ka OpenWeatherMap API-ju sa prosleđenim gradom i API ključem
         $response = $client->get("https://api.openweathermap.org/data/2.5/weather?q={$city}&appid={$apiKey}&units=metric");
+        
         $data = json_decode($response->getBody(), true);
 
+        // Vraćanje JSON odgovora sa bitnim informacijama o vremenskim uslovima
         return response()->json([
-            'city' => $data['name'],
-            'temperature' => $data['main']['temp'] . '°C',
-            'weather' => $data['weather'][0]['description'],
-            'humidity' => $data['main']['humidity'] . '%',
-            'wind_speed' => $data['wind']['speed'] . ' m/s',
+            'city' => $data['name'], // Naziv grada
+            'temperature' => $data['main']['temp'] . '°C', // Temperatura u stepenima Celzijusa
+            'weather' => $data['weather'][0]['description'], // Opis vremenskih uslova
+            'humidity' => $data['main']['humidity'] . '%', // Vlažnost vazduha u procentima
+            'wind_speed' => $data['wind']['speed'] . ' m/s', // Brzina vetra u metrima u sekundi
         ]);
     }
 }
