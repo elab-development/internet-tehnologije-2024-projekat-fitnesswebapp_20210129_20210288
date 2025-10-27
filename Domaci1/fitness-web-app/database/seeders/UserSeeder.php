@@ -9,6 +9,19 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        User::factory(10)->create();
+        // Kreira jednog admina sa poznatim podacima
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@fitnessapp.com',
+            'role' => 'admin',
+            'fitness_level' => 'expert',
+        ]);
+
+        // Kreira 9 običnih članova sa random vrednostima
+        User::factory(9)->create([
+            'role' => 'member',
+            'fitness_level' => fake()->randomElement(['beginner', 'intermediate', 'expert']),
+        ]);
     }
 }
+

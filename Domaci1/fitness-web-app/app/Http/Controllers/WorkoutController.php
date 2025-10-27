@@ -63,7 +63,7 @@ class WorkoutController extends Controller
     // Ažuriranje postojećeg treninga
     public function update(Request $request, Workout $workout)
 {
-    // Provjera da li trening pripada trenutnom korisniku
+    // Provera da li trening pripada trenutnom korisniku
     if ($workout->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
         return response()->json(['message' => 'Unauthorized'], 403);
     }

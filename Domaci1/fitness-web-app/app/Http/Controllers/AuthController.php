@@ -18,6 +18,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,member,guest',
+            'fitness_level' => 'required|in:beginner,intermediate,expert',
         ]);
 
         // Provera da li validacija nije uspela
@@ -31,6 +32,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'fitness_level' => $request->fitness_level,
         ]);
 
         // Provera da li postoji metoda `createToken`
