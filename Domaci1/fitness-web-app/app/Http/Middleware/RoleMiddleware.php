@@ -11,30 +11,37 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role)
     {
         $user = Auth::user();
+        $userRole = $user && isset($user->role) ? strtolower($user->role) : null; // ➊ // DODATO
 
-        // Ako je ruta za goste, dozvoljava korisnicima koji NISU ulogovani
+        // GUEST rute su dostupne ako NEMA tokena ili ako je korisnik sa rolom 'guest'
         if ($role === 'guest') {
-            if (!$user) {
+            if (!$user || $userRole === 'guest') {
                 return $next($request);
             }
+            return response()->json(['message' => 'Forbidden (only guests here)'], 403);
+        }
+
+        // BEZ tokena nema pristupa member/admin rutama
+        if (!$userRole) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // Ako korisnik nije ulogovan, vrati 401 Unauthorized
-        if (!$user || !isset($user->role)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        // Ako ruta zahteva member rolu, dozvoli samo memberima i adminima
-        if ($role === 'member' && !in_array(strtolower($user->role), ['member', 'admin'])) {
+        // MEMBER: dozvoljeno member + admin
+        if ($role === 'member') {
+            if (in_array($userRole, ['member', 'admin'], true)) {
+                return $next($request);
+            }
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        // Ako ruta zahteva admina, dozvoli samo adminima
-        if ($role === 'admin' && $user->role !== 'admin') {
+        // ADMIN: samo admin
+        if ($role === 'admin') {
+            if ($userRole === 'admin') {
+                return $next($request);
+            }
             return response()->json(['message' => 'Forbidden - Admin access only'], 403);
         }
 
-        return $next($request);
+        return response()->json(['message' => 'Forbidden'], 403);
     }
 }

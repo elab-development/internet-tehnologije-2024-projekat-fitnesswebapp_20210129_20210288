@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -87,5 +88,34 @@ class AuthController extends Controller
 
         // Vraćanje odgovora o uspešnoj odjavi
         return response()->json(['message' => 'Logged out'], 200);
+    }
+
+    // Prijava kao gost korisnik
+    public function loginAsGuest(Request $request)
+    {
+        $name = $request->input('name', 'Guest ' . Str::upper(Str::random(4)));
+        $fitness = $request->input('fitness_level', 'beginner');
+        $email = 'guest_' . Str::uuid() . '@example.test';
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make(Str::random(32)),
+            'role' => 'guest',
+            'fitness_level' => $fitness,
+        ]);
+
+        $token = $user->createToken('guest_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Guest account created',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'role' => $user->role,
+                'fitness_level' => $user->fitness_level,
+            ],
+        ], 201);
     }
 }

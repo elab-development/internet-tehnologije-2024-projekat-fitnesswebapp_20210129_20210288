@@ -5,20 +5,25 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ExerciseResource extends JsonResource
+class WorkoutResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'reps_or_time' => $this->reps_or_time,
-            'type' => ucfirst($this->type),
-            'workout_id' => $this->workout_id,
+            'id'              => $this->id,
+            'user_id'         => $this->user_id,
+            'name'            => $this->name,
+            'description'     => $this->description,
+            'duration'        => $this->duration,
+            'calories_burned' => $this->calories_burned,
+            'status'          => $this->status,
+            'created_at'      => optional($this->created_at)->toISOString(),
+            'updated_at'      => optional($this->updated_at)->toISOString(),
         ];
     }
 }

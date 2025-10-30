@@ -10,10 +10,23 @@ use App\Http\Resources\WorkoutResource;
 
 class WorkoutController extends Controller
 {
-    // Dohvatanje svih treninga
+    //  Dohvatanje svih treninga
     public function index()
     {
-        $workouts = Workout::all();
+        $user = Auth::user(); // Korisnik ulogovan preko tokena
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Pravila pristupa
+        if ($user->role === 'admin') {
+            $workouts = Workout::latest()->get(); // Admin vidi sve
+        } elseif ($user->role === 'member') {
+            $workouts = Workout::where('user_id', $user->id)->latest()->get(); // Member vidi samo svoje
+        } else { // Guest
+            $workouts = Workout::latest()->get(); // Guest vidi sve (read-only)
+        }
 
         return response()->json([
             'status' => 'success',
@@ -21,11 +34,25 @@ class WorkoutController extends Controller
         ], 200);
     }
 
-    // Dohvatanje treninga po ID-u
+    //  Dohvatanje treninga po ID-u
     public function show($id)
     {
         try {
             $workout = Workout::findOrFail($id);
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+
+            // Pravila pristupa
+            if ($user->role === 'admin') {
+                // Admin vidi sve
+            } elseif ($user->role === 'member' && $workout->user_id !== $user->id) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            } elseif ($user->role === 'guest') {
+                // Guest ima read-only pristup svima
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -39,7 +66,7 @@ class WorkoutController extends Controller
         }
     }
 
-    // Kreiranje novog treninga
+    //  Kreiranje novog treninga (member/admin)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -49,9 +76,7 @@ class WorkoutController extends Controller
             'calories_burned' => 'required|integer|min:1',
         ]);
 
-        // Dodavanje ID-a trenutnog korisnika
         $validated['user_id'] = Auth::id();
-
         $workout = Workout::create($validated);
 
         return response()->json([
@@ -60,30 +85,52 @@ class WorkoutController extends Controller
         ], 201);
     }
 
-    // Ažuriranje postojećeg treninga
-    public function update(Request $request, Workout $workout)
+    //  Ažuriranje treninga (vlasnik ili admin)
+public function update(Request $request, $id)
 {
-    // Provera da li trening pripada trenutnom korisniku
-    if ($workout->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
+    $user = Auth::user();
+
+    // 404 ako ne postoji
+    $workout = Workout::find($id);
+    if (!$workout) {
+        return response()->json(['message' => 'Workout not found'], 404);
     }
-    
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'date' => 'required|date',
+
+    // Dozvola: vlasnik ili admin
+    if ($user->role !== 'admin' && $workout->user_id !== $user->id) {
+        return response()->json(['message' => 'Forbidden'], 403);
+    }
+
+    // Partial update
+    $validated = $request->validate([
+        'name'            => 'sometimes|required|string|max:255',
+        'description'     => 'sometimes|nullable|string',
+        'duration'        => 'sometimes|integer|min:1',
+        'calories_burned' => 'sometimes|integer|min:1',
+        'status'          => 'sometimes|string|in:pending,started,completed',
     ]);
 
-    $workout->update($request->all());
+    $workout->update($validated);
 
-    return new WorkoutResource($workout);
+    return response()->json([
+        'status'  => 'success',
+        'message' => 'Workout successfully modified',
+        'id'      => $workout->id,  
+    ], 200);
 }
 
-    // Brisanje treninga po ID-u
+
+    //  Brisanje treninga po ID-u
     public function destroy($id)
     {
         try {
             $workout = Workout::findOrFail($id);
+            $user = Auth::user();
+
+            if ($user->role !== 'admin' && $workout->user_id !== $user->id) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+
             $workout->delete();
 
             return response()->json([
@@ -98,7 +145,7 @@ class WorkoutController extends Controller
         }
     }
 
-    // Pokretanje treninga
+    //  Pokretanje treninga
     public function startWorkout($id)
     {
         $workout = Workout::find($id);
@@ -116,7 +163,7 @@ class WorkoutController extends Controller
         ], 200);
     }
 
-    // Dohvatanje treninga određenog korisnika
+    //  Dohvatanje treninga određenog korisnika
     public function getUserWorkouts()
     {
         $userId = Auth::id();

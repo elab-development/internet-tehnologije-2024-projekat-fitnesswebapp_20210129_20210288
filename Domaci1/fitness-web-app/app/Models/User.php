@@ -15,7 +15,8 @@ class User extends Authenticatable
         'name',      // Ime korisnika
         'email',     // Email korisnika
         'password',  // Lozinka korisnika
-        'role',      // Uloga korisnika (admin, član)
+        'role',      // Uloga korisnika (admin, član, gost)
+        'fitness_level', // Nivo fizičke spremnosti korisnika
     ];
 
     // Atributi koji će biti sakriveni prilikom serijalizacije modela
