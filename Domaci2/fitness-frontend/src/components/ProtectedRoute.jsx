@@ -1,8 +1,9 @@
 import { Navigate } from "react-router-dom";
-import { getToken } from "../utils/auth";
+import { useAuth } from "../context/AuthContext";
 
+// Ako nema tokena idi na /login
 export default function ProtectedRoute({ children }) {
-  const token = getToken();
+  const { token } = useAuth();
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
