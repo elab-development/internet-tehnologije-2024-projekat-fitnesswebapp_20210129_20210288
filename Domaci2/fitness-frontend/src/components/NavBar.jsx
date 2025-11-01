@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { getToken, getUser, isMemberOrAdmin, logoutToLogin } from "../utils/auth";
+import logoUrl from "../assets/logo.png";
 
 export default function NavBar() {
   const token = getToken();
@@ -15,8 +16,7 @@ export default function NavBar() {
 
   return (
     <nav style={styles.bar}>
-      {/* Placeholder za logo – kasnije samo zameni <span> sa <img src="URL" /> */}
-      <span style={styles.logo} title="Logo" />
+      <img src={logoUrl} alt="Logo" style={styles.logo} />
       <Link to="/" style={styles.link}>Home</Link>
 
       {token && <Link to="/profile" style={styles.link}>Profile</Link>}

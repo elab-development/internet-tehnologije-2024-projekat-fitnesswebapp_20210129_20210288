@@ -1,68 +1,103 @@
+/* ----------------------------------------------------
+   Base reset & variables (DARK THEME)
+---------------------------------------------------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  /* Tamna paleta */
+  --bg: #0f1115;          /* pozadina stranice */
+  --panel: #151821;       /* površina (kartice, navbar…) */
+  --fg: #e5e7eb;          /* glavni tekst (svetlo siva) */
+  --muted: #9aa1af;       /* sekundarni tekst */
+  --primary: #ff6b00;     /* akcent (narandžasta) */
+  --border: #23283a;      /* linije/borderi */
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  background: radial-gradient(1200px 800px at 10% -10%, #1b2030 5%, transparent 60%) fixed,
+              radial-gradient(900px 700px at 110% 10%, #192136 5%, transparent 60%) fixed,
+              var(--bg);
+  color: var(--fg);
+  font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+a { color: var(--fg); text-underline-offset: 3px; }
+a:hover { color: var(--primary); }
+
+/* ----------------------------------------------------
+   Layout helpers
+---------------------------------------------------- */
+.container { width: min(1100px, 92%); margin-inline: auto; }
+.section { padding: 56px 0; }
+.hero { padding: 64px 0 28px; }
+
+.hero h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 3.2vw + 12px, 42px);
+  letter-spacing: -.02em;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+.lead { color: var(--muted); font-size: 18px; max-width: 70ch; }
+.page { padding-top: 14px; }
+
+/* Form helpers */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+@media (max-width: 700px) {
+  .form-grid { grid-template-columns: 1fr; }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+
+/* ----------------------------------------------------
+   Cards i grid
+---------------------------------------------------- */
+.grid-3 {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 900px) {.grid-3 { grid-template-columns: repeat(2, 1fr); }}
+@media (max-width: 640px) {.grid-3 { grid-template-columns: 1fr; }}
+
+.card {
+  background: linear-gradient(180deg, #1a1f2b, #171b26);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 16px;
+  box-shadow: var(--shadow);
+}
+.card h3 { margin: 0 0 8px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); }
+
+/* ----------------------------------------------------
+   Buttons
+---------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  border: 1px solid transparent; border-radius: 10px;
+  padding: 10px 14px; cursor: pointer;
+  background: var(--primary); color: #111; font-weight: 700;
+  box-shadow: var(--shadow);
+}
+.btn:hover { filter: brightness(1.06); }
+.btn:active { transform: translateY(1px); }
+
+.btn-outline {
+  background: var(--panel); color: var(--fg); border-color: var(--border);
+}
+
+/* mali separator */
+.hr {
+  height: 1px; background: var(--border);
+  margin: 18px 0;
 }

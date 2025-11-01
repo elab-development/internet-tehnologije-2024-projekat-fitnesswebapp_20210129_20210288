@@ -7,7 +7,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 function ProtectedDemo() {
   return (
     <div style={{ padding: 24 }}>
-      <h2>Protected area</h2>
       <p>Vidiš ovo jer imaš token (ulogovan si ili guest).</p>
     </div>
   );
