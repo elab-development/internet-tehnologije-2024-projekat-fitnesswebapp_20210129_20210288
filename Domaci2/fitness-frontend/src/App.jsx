@@ -2,15 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
+import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-
-function ProtectedDemo() {
-  return (
-    <div style={{ padding: 24 }}>
-      <p>Vidiš ovo jer imaš token (ulogovan si ili guest).</p>
-    </div>
-  );
-}
 
 export default function App() {
   return (
@@ -20,16 +13,17 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
+        {/* zaštićen profil */}
         <Route
-          path="/protected"
+          path="/profile"
           element={
             <ProtectedRoute>
-              <ProtectedDemo />
+              <Profile />
             </ProtectedRoute>
           }
         />
 
-        <Route path="*" element={<div style={{ padding: 24 }}>Not found</div>} />
+        <Route path="*" element={<div className="container section">Not found</div>} />
       </Routes>
     </div>
   );

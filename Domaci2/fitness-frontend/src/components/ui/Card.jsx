@@ -1,10 +1,9 @@
-// Generička kartica za grupisanje sadržaja (naslovi, forme, listovi...)
-
-export default function Card({ title, children, className = "" }) {
-  return (
-    <div className={`rounded-xl border border-gray-200 p-5 shadow-sm bg-white ${className}`}>
-      {title && <h3 className="text-lg font-semibold mb-3">{title}</h3>}
-      {children}
-    </div>
-  );
+// Jednostavna kartica – koristi .card iz index.css
+export default function Card({ title, children, style, className = "" }) {
+    return (
+        <div className={`card${className ? " " + className : ""}`} style={style}>
+            {title && <h3 style={{ marginTop: 0, marginBottom: 8 }}>{title}</h3>}
+            {children}
+        </div>
+    );
 }

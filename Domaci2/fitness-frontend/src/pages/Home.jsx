@@ -20,8 +20,7 @@ export default function Home() {
         <p className="lead">
           Dobrodošli u Reborn Fitness aplikaciju! Ova platforma je osmišljena da vam pomogne
           u praćenju i planiranju vaših treninga, bilo da ste početnik ili iskusni sportista.
-          Kreirajte nalog, birajte ulogu (member/admin), ili jednostavno uđite kao <i>guest</i>
-          i istražite funkcionalnosti.
+          Kreirajte nalog, birajte ulogu (member/admin), ili jednostavno uđite kao <i>gost</i> i istražite funkcionalnosti.
         </p>
 
         <div className="hero-actions">
@@ -83,7 +82,7 @@ export default function Home() {
 
         <div className="card">
           <p style={{ marginTop: 0 }}>
-            <b>Reborn Labs</b> je mali tim zaljubljenika u trening i tehnologiju (Beograd, 2025).
+            <b>Reborn Labs</b> je mali tim zaljubljenika u trening i tehnologiju. Osnovani smo 2025. godine u Beogradu.
             Naša misija je da spojimo jednostavan korisnički doživljaj sa realnim potrebama vežbača i trenera.
           </p>
 

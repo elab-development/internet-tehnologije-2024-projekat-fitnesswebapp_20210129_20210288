@@ -1,3 +1,4 @@
+// src/api/client.js
 import axios from "axios";
 
 export const api = axios.create({
@@ -5,7 +6,6 @@ export const api = axios.create({
   headers: { Accept: "application/json" },
 });
 
-// pozovi ovo kad dobiješ token (login/guest)
 export function setAuthToken(token) {
   if (token) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -16,6 +16,7 @@ export function setAuthToken(token) {
   }
 }
 
-// automatski učitaj token ako postoji (osvežen tab)
 const saved = localStorage.getItem("token");
 if (saved) setAuthToken(saved);
+
+export default api;

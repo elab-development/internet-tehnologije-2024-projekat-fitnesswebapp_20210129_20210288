@@ -10,10 +10,9 @@ export function AuthProvider({ children }) {
     return raw ? JSON.parse(raw) : null;
   });
 
-  useEffect(() => {
-    setAuthToken(token);
-  }, [token]);
+  useEffect(() => { setAuthToken(token); }, [token]);
 
+  // email/password login
   const login = async (email, password) => {
     const { data } = await api.post("/login", { email, password });
     setToken(data.token);
@@ -23,28 +22,38 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
+  // guest login
   const loginGuest = async (name = "") => {
     const { data } = await api.post("/guest/login", name ? { name } : {});
     setToken(data.token);
-    setUser({ ...data.user, email: "guest@example.test" });
+    const fakeEmail = "guest@example.test";
+    const newUser = { ...data.user, email: fakeEmail };
+    setUser(newUser);
     localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify({ ...data.user, email: "guest@example.test" }));
+    localStorage.setItem("user", JSON.stringify(newUser));
+    return newUser;
+  };
+
+  // registracija (dodato fitness_level!)
+  const register = async ({ name, email, password, role, fitness_level }) => {
+    const { data } = await api.post("/register", {
+      name, email, password, role, fitness_level
+    });
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     return data.user;
   };
 
   const logout = async () => {
     try { await api.post("/logout"); } catch {}
-    setToken("");
-    setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    setToken(""); setUser(null);
+    localStorage.removeItem("token"); localStorage.removeItem("user");
   };
 
-  const value = useMemo(() => ({ token, user, login, loginGuest, logout }), [token, user]);
-
+  const value = useMemo(() => ({ token, user, login, loginGuest, register, logout }), [token, user]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export function useAuth() { return useContext(AuthContext); }
