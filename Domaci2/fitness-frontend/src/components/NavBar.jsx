@@ -1,37 +1,67 @@
-import { Link } from "react-router-dom";
+// src/components/NavBar.jsx
+import { NavLink, Link } from "react-router-dom";
+import logo from "../assets/logo.png";
 import { getToken, getUser, isMemberOrAdmin, logoutToLogin } from "../utils/auth";
-import logoUrl from "../assets/logo.png";
 
 export default function NavBar() {
   const token = getToken();
   const user = getUser();
 
-  const styles = {
-    bar: { display: "flex", alignItems: "center", gap: 16, padding: "10px 16px", borderBottom: "1px solid #e5e5e5" },
-    logo: { width: 36, height: 36, borderRadius: 6, background: "#ddd", display: "inline-block" },
-    grow: { marginLeft: "auto" },
-    link: { textDecoration: "none", color: "#333" },
-    role: { opacity: 0.7, fontSize: 13, marginLeft: 8 }
-  };
-
   return (
-    <nav style={styles.bar}>
-      <img src={logoUrl} alt="Logo" style={styles.logo} />
-      <Link to="/" style={styles.link}>Home</Link>
+    <header className="navbar">
+      <div className="container nav-inner">
+        {/* brand + logo */}
+        <Link to="/" className="brand">
+          <img src={logo} alt="Reborn Fitness" className="brand-logo" />
+          <span className="brand-text">REBORN fitness</span>
+        </Link>
 
-      {token && <Link to="/profile" style={styles.link}>Profile</Link>}
-      {token && isMemberOrAdmin() && <Link to="/workouts/new" style={styles.link}>Add Workout</Link>}
+        {/* glavna navigacija */}
+        <nav className="nav-links">
+          <NavLink
+            to="/"
+            className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+          >
+            Home
+          </NavLink>
 
-      <div style={styles.grow} />
+          {token && (
+            <NavLink
+              to="/profile"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
+              Profile
+            </NavLink>
+          )}
 
-      {!token ? (
-        <Link to="/login" style={styles.link}>Login</Link>
-      ) : (
-        <>
-          <span>Hi, {user?.name || "User"} <span style={styles.role}>({user?.role})</span></span>
-          <button onClick={logoutToLogin} style={{ marginLeft: 10 }}>Logout</button>
-        </>
-      )}
-    </nav>
+          {token && isMemberOrAdmin() && (
+            <NavLink
+              to="/workouts/new"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
+              Add Workout
+            </NavLink>
+          )}
+        </nav>
+
+        {/* desna strana: login / user + logout */}
+        <div className="nav-right">
+          {!token ? (
+            <Link to="/login" className="btn btn-small">
+              Login
+            </Link>
+          ) : (
+            <>
+              <span className="user-pill">
+                {user?.name || "User"} <span className="role">({user?.role})</span>
+              </span>
+              <button className="btn btn-ghost btn-small" onClick={logoutToLogin}>
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }
