@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { api, setAuthToken } from "../api/client";
+import api, { setAuthToken } from "../api/client";
 
 const AuthContext = createContext(null);
 
@@ -12,7 +12,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { setAuthToken(token); }, [token]);
 
-  // email/password login
   const login = async (email, password) => {
     const { data } = await api.post("/login", { email, password });
     setToken(data.token);
@@ -22,23 +21,18 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
-  // guest login
   const loginGuest = async (name = "") => {
     const { data } = await api.post("/guest/login", name ? { name } : {});
     setToken(data.token);
-    const fakeEmail = "guest@example.test";
-    const newUser = { ...data.user, email: fakeEmail };
-    setUser(newUser);
+    setUser({ ...data.user, email: "guest@example.test" });
     localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(newUser));
-    return newUser;
+    localStorage.setItem("user", JSON.stringify({ ...data.user, email: "guest@example.test" }));
+    return data.user;
   };
 
-  // registracija (dodato fitness_level!)
-  const register = async ({ name, email, password, role, fitness_level }) => {
-    const { data } = await api.post("/register", {
-      name, email, password, role, fitness_level
-    });
+  // NOVO: registracija kroz backend /register
+  const register = async ({ name, email, password, role = "member", fitness_level = "beginner" }) => {
+    const { data } = await api.post("/register", { name, email, password, role, fitness_level });
     setToken(data.token);
     setUser(data.user);
     localStorage.setItem("token", data.token);
@@ -48,12 +42,20 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try { await api.post("/logout"); } catch {}
-    setToken(""); setUser(null);
-    localStorage.removeItem("token"); localStorage.removeItem("user");
+    setToken("");
+    setUser(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   };
 
-  const value = useMemo(() => ({ token, user, login, loginGuest, register, logout }), [token, user]);
+  const value = useMemo(
+    () => ({ token, user, login, loginGuest, register, logout }),
+    [token, user]
+  );
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() { return useContext(AuthContext); }
+export function useAuth() {
+  return useContext(AuthContext);
+}

@@ -1,61 +1,61 @@
-// src/components/NavBar.jsx
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
-import { getToken, getUser, isMemberOrAdmin, logoutToLogin } from "../utils/auth";
 
+/**
+ * NavBar:
+ * - čita token i user iz globalnog AuthContext-a, ne iz localStorage helpera
+ * - prikazuje ime (i ulogu) nakon logovanja bez reload-a
+ * - logout -> vrati na Home
+ */
 export default function NavBar() {
-  const token = getToken();
-  const user = getUser();
+  const nav = useNavigate();
+  const { token, user, logout } = useAuth();
 
   return (
     <header className="navbar">
       <div className="container nav-inner">
-        {/* brand + logo */}
+        {/* LOGO I NAZIV */}
         <Link to="/" className="brand">
-          <img src={logo} alt="Reborn Fitness" className="brand-logo" />
+          <img src={logo} alt="Rebel Fitness" className="brand-logo" />
           <span className="brand-text">REBORN fitness</span>
         </Link>
 
-        {/* glavna navigacija */}
+        {/* GLAVNI DUGMICI */}
         <nav className="nav-links">
-          <NavLink
-            to="/"
-            className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
-          >
+          <NavLink to="/" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
             Home
           </NavLink>
 
           {token && (
-            <NavLink
-              to="/profile"
-              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
-            >
+            <NavLink to="/profile" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
               Profile
             </NavLink>
           )}
 
-          {token && isMemberOrAdmin() && (
-            <NavLink
-              to="/workouts/new"
-              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
-            >
+          {token && (user?.role === "member" || user?.role === "admin") && (
+            <NavLink to="/workouts/new" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
               Add Workout
             </NavLink>
           )}
         </nav>
 
-        {/* desna strana: login / user + logout */}
+        {/* desno: login / user + logout */}
         <div className="nav-right">
           {!token ? (
-            <Link to="/login" className="btn btn-small">
-              Login
-            </Link>
+            <Link to="/login" className="btn btn-small">Login</Link>
           ) : (
             <>
               <span className="user-pill">
-                {user?.name || "User"} <span className="role">({user?.role})</span>
+                {user?.name ?? "User"} <span className="role">({user?.role})</span>
               </span>
-              <button className="btn btn-ghost btn-small" onClick={logoutToLogin}>
+              <button
+                className="btn-ghost btn-small"
+                onClick={async () => {
+                  await logout();
+                  nav("/"); 
+                }}
+              >
                 Logout
               </button>
             </>
