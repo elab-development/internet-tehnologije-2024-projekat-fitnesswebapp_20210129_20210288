@@ -2,12 +2,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
-/**
- * NavBar:
- * - čita token i user iz globalnog AuthContext-a, ne iz localStorage helpera
- * - prikazuje ime (i ulogu) nakon logovanja bez reload-a
- * - logout -> vrati na Home
- */
+
 export default function NavBar() {
   const nav = useNavigate();
   const { token, user, logout } = useAuth();
@@ -18,7 +13,7 @@ export default function NavBar() {
         {/* LOGO I NAZIV */}
         <Link to="/" className="brand">
           <img src={logo} alt="Rebel Fitness" className="brand-logo" />
-          <span className="brand-text">REBORN fitness</span>
+          <span className="brand-text">REBEL fitness</span>
         </Link>
 
         {/* GLAVNI DUGMICI */}

@@ -6,11 +6,6 @@ import Card from "../components/ui/Card";
 import TextInput from "../components/ui/TextInput";
 import SelectInput from "../components/ui/SelectInput";
 
-/**
- * Login/Registracija/Guest:
- * - sve akcije idu kroz AuthContext (login, loginGuest, register)
- * - nakon uspeha: redirect na Home (/)
- */
 export default function Login() {
   const { login, loginGuest, register } = useAuth();
   const nav = useNavigate();
@@ -35,7 +30,7 @@ export default function Login() {
     resetError(); setLoading(true);
     try {
       await loginGuest();
-      nav("/"); // → Home
+      nav("/"); 
     } catch {
       setErr("Guest login nije uspeo. Proveri Laravel server.");
     } finally { setLoading(false); }
@@ -47,7 +42,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
-      nav("/"); // → Home
+      nav("/");
     } catch {
       setErr("Neuspešna prijava. Proveri kredencijale.");
     } finally { setLoading(false); }
@@ -65,7 +60,7 @@ export default function Login() {
         role: rRole.toLowerCase(),
         fitness_level: rLevel.toLowerCase(),
       });
-      nav("/"); // → Home
+      nav("/");
     } catch {
       setErr("Registracija nije uspela. Proveri da li email već postoji.");
     } finally { setLoading(false); }
