@@ -1,72 +1,69 @@
 // src/components/WeatherWidget.jsx
 import { useState } from "react";
-import Card from "./ui/Card";
-import Button from "./ui/Button";
 import { getWeather } from "../api/weather";
 
 export default function WeatherWidget() {
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("Belgrade");
+  const [w, setW] = useState(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const [wx, setWx] = useState(null);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setErr(""); setWx(null);
-    if (!city.trim()) return setErr("Unesi naziv grada.");
+  const fetchWeather = async (e) => {
+    e?.preventDefault();
+    setErr("");
+    setLoading(true);
+    setW(null);
     try {
-      setLoading(true);
-      const data = await getWeather(city.trim());
-      setWx(data);
-    } catch {
-      setErr("Ne mogu da dohvatim vreme. Proveri server ili naziv grada.");
+      const data = await getWeather(city);
+      setW(data);
+    } catch (e) {
+      setErr("Ne mogu da dohvatim prognozu. Proveri /api/weather/{city} i CORS.");
     } finally {
       setLoading(false);
     }
   };
 
-  // pokušaj da “lepo” prikažemo, a fallback je raw JSON
-  const pretty = wx && (wx.main || wx.weather || wx.temp || wx.city);
-
   return (
     <section className="section container">
       <h2 style={{ marginTop: 0, marginBottom: 12 }}>Vremenska prognoza</h2>
-      <Card>
-        <form onSubmit={submit} className="form">
-          <div className="contact-grid">
-            <div className="field">
-              <label>Grad</label>
-              <input value={city} onChange={(e)=>setCity(e.target.value)} placeholder="npr. Beograd" />
-            </div>
-          </div>
-          {err && <p style={{ color:"#ff6b6b", marginTop: 6 }}>{err}</p>}
-          <div className="form-actions">
-            <Button type="submit" disabled={loading}>
-              {loading ? "Učitavam..." : "Prikaži vreme"}
-            </Button>
-          </div>
-        </form>
 
-        {wx && (
-          <div style={{ marginTop: 12 }}>
-            {pretty ? (
-              <>
-                <p style={{ margin: 0, opacity: .85 }}>
-                  <b>{wx.city ?? wx.name ?? city}</b>
-                </p>
-                {"temp" in wx ? <p>Temperatura: {wx.temp}°C</p> : null}
-                {wx.main?.temp && <p>Temperatura: {Math.round(wx.main.temp)}°C</p>}
-                {wx.weather?.[0]?.description && <p>Opis: {wx.weather[0].description}</p>}
-                {wx.main?.humidity && <p>Vlažnost: {wx.main.humidity}%</p>}
-              </>
-            ) : (
-              <pre style={{ margin: 0, whiteSpace: "pre-wrap" }}>
-                {JSON.stringify(wx, null, 2)}
-              </pre>
-            )}
+      <form className="card" onSubmit={fetchWeather} style={{ padding: 16 }}>
+        <div className="field">
+          <label>Grad</label>
+          <input
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="npr. Belgrade"
+          />
+        </div>
+        <button className="btn" type="submit" disabled={loading}>
+          {loading ? "Učitavam..." : "Prikaži vreme"}
+        </button>
+      </form>
+
+      <div className="card" style={{ padding: 16, marginTop: 12 }}>
+        {err && <p style={{ color: "#ff6b6b", margin: 0 }}>{err}</p>}
+
+        {!err && loading && <p style={{ margin: 0 }}>Učitavam…</p>}
+
+        {!err && !loading && w && (
+          <div>
+            <h3 style={{ marginTop: 0 }}>{w.city}</h3>
+            <p style={{ margin: "4px 0" }}>
+              <b>Temperatura:</b> {w.temperature}
+            </p>
+            <p style={{ margin: "4px 0" }}>
+              <b>Vreme:</b> {w.weather}
+            </p>
+            <p style={{ margin: "4px 0" }}>
+              <b>Vlažnost:</b> {w.humidity}
+            </p>
+            <p style={{ margin: "4px 0" }}>
+              <b>Vetar:</b> {w.wind_speed}
+            </p>
           </div>
         )}
-      </Card>
+      </div>
     </section>
   );
 }
