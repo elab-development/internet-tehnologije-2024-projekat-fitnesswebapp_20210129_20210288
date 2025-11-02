@@ -1,36 +1,53 @@
+// src/components/NavBar.jsx
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
 
-
 export default function NavBar() {
   const nav = useNavigate();
   const { token, user, logout } = useAuth();
+  const role = user?.role; // "member" | "admin" | "guest?"
 
   return (
     <header className="navbar">
       <div className="container nav-inner">
-        {/* LOGO I NAZIV */}
+        {/* LOGO + naziv */}
         <Link to="/" className="brand">
           <img src={logo} alt="Rebel Fitness" className="brand-logo" />
           <span className="brand-text">REBEL fitness</span>
         </Link>
 
-        {/* GLAVNI DUGMICI */}
+        {/* Glavni linkovi */}
         <nav className="nav-links">
           <NavLink to="/" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
             Home
           </NavLink>
 
-          {token && (
-            <NavLink to="/profile" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
-              Profile
+          {/* Workouts – dostupno za member/admin */}
+          {(role === "member" || role === "admin") && (
+            <NavLink to="/workouts" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+              Workouts
             </NavLink>
           )}
 
-          {token && (user?.role === "member" || user?.role === "admin") && (
-            <NavLink to="/workouts/new" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
-              Add Workout
+          {/* Exercises – prema tvojim rutama: CRUD je dostupan member/admin */}
+          {(role === "member" || role === "admin") && (
+            <NavLink to="/exercises" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+              Exercises
+            </NavLink>
+          )}
+
+          {/* Goals – samo admin */}
+          {role === "admin" && (
+            <NavLink to="/goals" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+              Goals
+            </NavLink>
+          )}
+
+          {/* Profil – ako si ulogovan */}
+          {token && (
+            <NavLink to="/profile" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+              Profile
             </NavLink>
           )}
         </nav>
@@ -42,14 +59,11 @@ export default function NavBar() {
           ) : (
             <>
               <span className="user-pill">
-                {user?.name ?? "User"} <span className="role">({user?.role})</span>
+                {user?.name ?? user?.email ?? "User"} <span className="role">({role})</span>
               </span>
               <button
                 className="btn-ghost btn-small"
-                onClick={async () => {
-                  await logout();
-                  nav("/"); 
-                }}
+                onClick={async () => { await logout(); nav("/"); }}
               >
                 Logout
               </button>

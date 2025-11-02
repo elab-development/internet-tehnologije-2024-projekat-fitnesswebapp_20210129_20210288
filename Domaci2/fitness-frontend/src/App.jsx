@@ -3,7 +3,13 @@ import NavBar from "./components/NavBar.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 import Profile from "./pages/Profile.jsx";
+import MyWorkouts from "./pages/MyWorkouts.jsx";
+import CreateWorkout from "./pages/CreateWorkout.jsx"; 
+
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import RoleRoute from "./components/RoleRoute.jsx";
+
+
 
 export default function App() {
   return (
@@ -24,6 +30,18 @@ export default function App() {
         />
 
         <Route path="*" element={<div className="container section">Not found</div>} />
+
+        <Route
+          path="/users/workouts"
+          element={
+            <ProtectedRoute>
+              <RoleRoute>
+                <MyWorkouts />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </div>
   );

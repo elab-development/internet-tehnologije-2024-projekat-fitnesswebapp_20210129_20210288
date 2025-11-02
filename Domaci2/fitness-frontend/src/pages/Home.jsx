@@ -1,45 +1,37 @@
 // src/pages/Home.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Modal from "../components/ui/Modal";
+import WeatherWidget from "../components/WeatherWidget";
+import logo from "../assets/logo.png";
 
 export default function Home() {
   const { user } = useAuth();
 
-  /* ---------- Welcome modal (po želji prikaz na svakom ulazu) ---------- */
+  // Welcome modal (namerno uvek pri ulasku)
   const [showWelcome, setShowWelcome] = useState(true);
 
-  /* ---------- Kontakt forma ----------- */
+  // Kontakt forma (demo)
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-
-  // modali za kontakt
   const [showConfirm, setShowConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // helper - ciscenje forme
   const resetContact = () => {
-    setFullName("");
-    setEmail("");
-    setMessage("");
+    setFullName(""); setEmail(""); setMessage("");
   };
 
-  // submit forme => ne šaljemo na backend, otvaramo confirm modal / NIJE POVEZANO SA BACKENDOM
   const handleContactSubmit = (e) => {
     e.preventDefault();
     setShowConfirm(true);
   };
-
-  // klik na “Da, pošalji”
   const confirmSend = () => {
     setShowConfirm(false);
     resetContact();
     setShowSuccess(true);
   };
-
-  // klik na “Ne, odustani”
   const cancelSend = () => {
     setShowConfirm(false);
     resetContact();
@@ -47,7 +39,7 @@ export default function Home() {
 
   return (
     <div className="page">
-      {/* ---------- WELCOME MODAL ---------- */}
+      {/* WELCOME */}
       <Modal open={showWelcome} title="PAŽNJA!" onClose={() => setShowWelcome(false)}>
         <p>
           Zbog radova na održavanju sajta, neke funkcionalnosti možda neće raditi ispravno.
@@ -58,26 +50,14 @@ export default function Home() {
         </div>
       </Modal>
 
-      {/* ---------- CONFIRM MODAL ZA KONTAKT ---------- */}
-      <Modal
-        open={showConfirm}
-        title="Potvrda slanja poruke"
-        onClose={() => setShowConfirm(false)}
-      >
+      {/* CONFIRM kontakt */}
+      <Modal open={showConfirm} title="Potvrda slanja poruke" onClose={() => setShowConfirm(false)}>
         <div className="card" style={{ padding: 12, marginBottom: 12 }}>
-          <p style={{ margin: 0, opacity: 0.85 }}>
-            Molimo proverite podatke pre slanja:
-          </p>
+          <p style={{ margin: 0, opacity: 0.85 }}>Molimo proverite podatke pre slanja:</p>
           <div className="hr" />
-          <p style={{ margin: "6px 0" }}>
-            <b>Ime i prezime:</b> {fullName || <i>(nije uneto)</i>}
-          </p>
-          <p style={{ margin: "6px 0" }}>
-            <b>Email:</b> {email || <i>(nije uneto)</i>}
-          </p>
-          <p style={{ margin: "6px 0" }}>
-            <b>Poruka:</b> {message || <i>(nije uneto)</i>}
-          </p>
+          <p style={{ margin: "6px 0" }}><b>Ime i prezime:</b> {fullName || <i>(nije uneto)</i>}</p>
+          <p style={{ margin: "6px 0" }}><b>Email:</b> {email || <i>(nije uneto)</i>}</p>
+          <p style={{ margin: "6px 0" }}><b>Poruka:</b> {message || <i>(nije uneto)</i>}</p>
         </div>
 
         <p style={{ marginTop: 0 }}>Da li želite da pošaljete ove podatke?</p>
@@ -87,50 +67,53 @@ export default function Home() {
         </div>
       </Modal>
 
-      {/* ---------- SUCCESS MODAL ZA KONTAKT ---------- */}
-      <Modal
-        open={showSuccess}
-        title="Poruka poslata"
-        onClose={() => setShowSuccess(false)}
-      >
+      {/* SUCCESS kontakt */}
+      <Modal open={showSuccess} title="Poruka poslata" onClose={() => setShowSuccess(false)}>
         <p>Vaša poruka je uspešno prosleđena našem timu. Odgovorićemo u najkraćem roku.</p>
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button className="btn" onClick={() => setShowSuccess(false)}>Super, hvala</button>
         </div>
       </Modal>
 
-      {/* ---------- UVOD CONTAINER ---------- */}
+      {/* HERO – levo tekst, desno logo */}
       <header className="intro container">
-        <h1>Rebel Fitness</h1>
-        <p className="lead">
-          Dobrodošli u Rebel Fitness aplikaciju! Ova platforma je osmišljena da vam pomogne
-          u praćenju i planiranju vaših treninga, bilo da ste početnik ili iskusni sportista.
-          Kreirajte nalog, birajte ulogu (member/admin), ili jednostavno uđite kao <i>gost</i> i istražite funkcionalnosti.
-        </p>
+        <div className="hero-grid">
+          <div>
+            <h1>Rebel Fitness</h1>
+            <p className="lead">
+              Dobrodošli u Rebel Fitness aplikaciju! Ova platforma je osmišljena da vam pomogne
+              u praćenju i planiranju vaših treninga, bilo da ste početnik ili iskusni sportista.
+              Kreirajte nalog, birajte ulogu (member/admin), ili jednostavno uđite kao <i>gost</i> i istražite funkcionalnosti.
+            </p>
 
-        <div className="hero-actions">
-          {!user ? (
-            <>
-              <Link className="btn" to="/login">Uloguj se ili nastavi kao gost</Link>
-              <a
-                className="btn btn-outline"
-                href="https://github.com/elab-development/internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288"
-                target="_blank"
-                rel="noreferrer"
-              >
-                GitHub
-              </a>
-            </>
-          ) : (
-            <>
-              <Link className="btn" to="/profile">Moj profil</Link>
-              <Link className="btn btn-outline" to="/workouts/new">Dodaj workout</Link>
-            </>
-          )}
+            <div className="hero-actions">
+              {!user ? (
+                <>
+                  <Link className="btn" to="/login">Uloguj se ili nastavi kao gost</Link>
+                  <a
+                    className="btn btn-outline"
+                    href="https://github.com/elab-development/internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288"
+                    target="_blank" rel="noreferrer"
+                  >
+                    GitHub
+                  </a>
+                </>
+              ) : (
+                <>
+                  <Link className="btn" to="/profile">Moj profil</Link>
+                  <Link className="btn btn-outline" to="/workouts/new">Dodaj workout</Link>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="hero-art">
+            <img src={logo} alt="Rebel Fitness Logo" />
+          </div>
         </div>
       </header>
 
-      {/* ---------- ŠTA APLIKACIJA RADI ---------- */}
+      {/* ŠTA APLIKACIJA RADI */}
       <section className="section container">
         <h2 style={{ marginTop: 0, marginBottom: 12 }}>Šta aplikacija radi</h2>
         <div className="grid-3">
@@ -149,7 +132,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- KO SMO MI ---------- */}
+      {/* KO SMO MI */}
       <section className="section container">
         <h2 style={{ marginTop: 0, marginBottom: 12 }}>Ko smo mi?</h2>
         <div className="card">
@@ -164,10 +147,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- KONTAKT (DEMO) ---------- */}
+      {/* KONTAKT (demo) */}
       <section className="section container">
         <h2 style={{ marginTop: 0, marginBottom: 12 }}>Kontakt</h2>
-
         <form className="form card" onSubmit={handleContactSubmit}>
           <div className="contact-grid">
             <div className="field">
@@ -182,7 +164,6 @@ export default function Home() {
                 onChange={(e) => setFullName(e.target.value)}
               />
             </div>
-
             <div className="field">
               <label htmlFor="email">Email</label>
               <input
@@ -214,6 +195,9 @@ export default function Home() {
           </div>
         </form>
       </section>
+
+      {/* PUBLIC servis sa backend-a */}
+      <WeatherWidget />
     </div>
   );
 }
