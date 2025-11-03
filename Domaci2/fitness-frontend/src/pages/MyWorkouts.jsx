@@ -48,7 +48,7 @@ export default function MyWorkouts() {
     <div className="container section">
       <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
         <h2 style={{ margin:0 }}>Moji treninzi</h2>
-        <Link to="/workouts/new" className="btn">+ Novi</Link>
+        <Link to="/workouts/new" className="btn">+ Novi trening</Link>
       </div>
 
       {loading && <p>Učitavam…</p>}

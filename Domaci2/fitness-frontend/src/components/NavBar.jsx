@@ -6,7 +6,7 @@ import logo from "../assets/logo.png";
 export default function NavBar() {
   const nav = useNavigate();
   const { token, user, logout } = useAuth();
-  const role = user?.role; // "member" | "admin" | "guest?"
+  const role = user?.role; // "member" | "admin" | (možda "guest")
 
   return (
     <header className="navbar">
@@ -30,7 +30,7 @@ export default function NavBar() {
             </NavLink>
           )}
 
-          {/* Exercises – prema tvojim rutama: CRUD je dostupan member/admin */}
+          {/* Exercises – member/admin */}
           {(role === "member" || role === "admin") && (
             <NavLink to="/exercises" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
               Exercises
@@ -41,13 +41,6 @@ export default function NavBar() {
           {role === "admin" && (
             <NavLink to="/goals" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
               Goals
-            </NavLink>
-          )}
-
-          {/* Profil – ako si ulogovan */}
-          {token && (
-            <NavLink to="/profile" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
-              Profile
             </NavLink>
           )}
         </nav>
