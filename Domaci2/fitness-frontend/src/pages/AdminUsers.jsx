@@ -1,9 +1,6 @@
 // src/pages/AdminUsers.jsx
-// Admin: lista korisnika + brisanje, link ka detalju.
-// - GET  /admin/users
-// - DELETE /admin/users/:id
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
@@ -18,12 +15,17 @@ export default function AdminUsers() {
   const [confirmId, setConfirmId] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
+  // PAGINACIJA
+  const [page, setPage] = useState(1);
+  const pageSize = 6; 
+
   const load = useCallback(async () => {
     try {
       setErr("");
       setLoading(true);
       const list = await fetchUsers();
       setItems(Array.isArray(list) ? list : []);
+      setPage(1); // reset na prvu stranu pri osvežavanju
     } catch {
       setErr("Ne mogu da učitam korisnike. Proveri backend ili privilegije.");
     } finally {
@@ -47,6 +49,18 @@ export default function AdminUsers() {
     }
   };
 
+  // LOGIKA PAGINACIJE
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const pagedItems = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return items.slice(start, start + pageSize);
+  }, [items, page, pageSize]);
+
+  // AKO OBRIŠEMO POSLEDNJI ELEMENT NA STRANI, A STRANA VIŠE NE POSTOJI, VRATI SE NA PRETHODNU
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
   return (
     <div className="container section">
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
@@ -62,45 +76,68 @@ export default function AdminUsers() {
           {!items.length ? (
             <p style={{ margin: 0, opacity:.85 }}>Trenutno nema korisnika za prikaz.</p>
           ) : (
-            <div style={{ overflowX:"auto" }}>
-              <table style={{ width:"100%", borderCollapse:"collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign:"left", padding:8 }}>ID</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Ime</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Email</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Uloga</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Akcije</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(u => (
-                    <tr key={u.id} style={{ borderTop:"1px solid rgba(255,255,255,.08)" }}>
-                      <td style={{ padding:8 }}>{u.id}</td>
-                      <td style={{ padding:8 }}>{u.name || "-"}</td>
-                      <td style={{ padding:8 }}>{u.email || "-"}</td>
-                      <td style={{ padding:8 }}>{u.role || "-"}</td>
-                      <td style={{ padding:8, display:"flex", gap:8, flexWrap:"wrap" }}>
-                        <Link
-                          className="btn btn-outline"
-                          to={`/admin/users/${u.id}`}
-                          state={{ user: u }} // prosledi podatke detail stranici
-                        >
-                          Detalji
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          disabled={busyId === u.id}
-                          onClick={() => setConfirmId(u.id)}
-                        >
-                          {busyId === u.id ? "Brišem…" : "Obriši"}
-                        </Button>
-                      </td>
+            <>
+              <div style={{ overflowX:"auto" }}>
+                <table style={{ width:"100%", borderCollapse:"collapse" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign:"left", padding:8 }}>ID</th>
+                      <th style={{ textAlign:"left", padding:8 }}>Ime</th>
+                      <th style={{ textAlign:"left", padding:8 }}>Email</th>
+                      <th style={{ textAlign:"left", padding:8 }}>Uloga</th>
+                      <th style={{ textAlign:"left", padding:8 }}>Akcije</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {pagedItems.map(u => (
+                      <tr key={u.id} style={{ borderTop:"1px solid rgba(255,255,255,.08)" }}>
+                        <td style={{ padding:8 }}>{u.id}</td>
+                        <td style={{ padding:8 }}>{u.name || "-"}</td>
+                        <td style={{ padding:8 }}>{u.email || "-"}</td>
+                        <td style={{ padding:8 }}>{u.role || "-"}</td>
+                        <td style={{ padding:8, display:"flex", gap:8, flexWrap:"wrap" }}>
+                          <Link
+                            className="btn btn-outline"
+                            to={`/admin/users/${u.id}`}
+                            state={{ user: u }}
+                          >
+                            Detalji
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            disabled={busyId === u.id}
+                            onClick={() => setConfirmId(u.id)}
+                          >
+                            {busyId === u.id ? "Brišem…" : "Obriši"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* PAGINACIONE KONTROLE */}
+              {totalPages > 1 && (
+                <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginTop:16 }}>
+                  <Button
+                    variant="outline"
+                    disabled={page === 1}
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                  >
+                    ← Nazad
+                  </Button>
+                  <span>Strana {page} od {totalPages}</span>
+                  <Button
+                    variant="outline"
+                    disabled={page === totalPages}
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  >
+                    Napred →
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </Card>
       )}
