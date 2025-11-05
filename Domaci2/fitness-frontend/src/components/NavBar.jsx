@@ -6,7 +6,7 @@ import logo from "../assets/logo.png";
 export default function NavBar() {
   const nav = useNavigate();
   const { token, user, logout } = useAuth();
-  const role = user?.role; // "member" | "admin" | (možda "guest")
+  const role = user?.role;
 
   return (
     <header className="navbar">
@@ -19,44 +19,72 @@ export default function NavBar() {
 
         {/* Glavni linkovi */}
         <nav className="nav-links">
-          <NavLink to="/" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+          <NavLink
+            to="/"
+            className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+          >
             Home
           </NavLink>
 
-          {/* Workouts – dostupno za member/admin */}
+          {/* Workouts – member/admin */}
           {(role === "member" || role === "admin") && (
-            <NavLink to="/workouts" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+            <NavLink
+              to="/workouts"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
               Workouts
             </NavLink>
           )}
 
           {/* Exercises – member/admin */}
           {(role === "member" || role === "admin") && (
-            <NavLink to="/exercises" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+            <NavLink
+              to="/exercises"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
               Exercises
             </NavLink>
           )}
 
           {/* Goals – samo admin */}
           {role === "admin" && (
-            <NavLink to="/goals" className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}>
+            <NavLink
+              to="/goals"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
               Goals
+            </NavLink>
+          )}
+
+          {/* Admin panel – samo admin */}
+          {role === "admin" && (
+            <NavLink
+              to="/admin/users"
+              className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
+            >
+              Admin · Users
             </NavLink>
           )}
         </nav>
 
-        {/* desno: login / user + logout */}
+        {/* Desna strana: login / user + logout */}
         <div className="nav-right">
           {!token ? (
-            <Link to="/login" className="btn btn-small">Login</Link>
+            <Link to="/login" className="btn btn-small">
+              Login
+            </Link>
           ) : (
             <>
               <span className="user-pill">
-                {user?.name ?? user?.email ?? "User"} <span className="role">({role})</span>
+                {user?.name ?? user?.email ?? "User"}{" "}
+                <span className="role">({role})</span>
               </span>
               <button
                 className="btn-ghost btn-small"
-                onClick={async () => { await logout(); nav("/"); }}
+                onClick={async () => {
+                  await logout();
+                  nav("/");
+                }}
               >
                 Logout
               </button>

@@ -1,19 +1,22 @@
 // src/App.jsx
-// Glavna definicija React ruta i layouta aplikacije.
-// - Public: Home, Login
-// - Protected: Workouts panel (listanje, dodavanje, izmena)
-// - RoleRoute: ograničava pristup po ulozi (member/admin)
-
 import { Routes, Route } from "react-router-dom";
+// Komponente
 import NavBar from "./components/NavBar.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
+
+// Treninzi (workouts)
 import MyWorkouts from "./pages/MyWorkouts.jsx";
 import CreateWorkout from "./pages/CreateWorkout.jsx";
-import EditWorkout from "./pages/EditWorkout.jsx"; // ✅ novo
+import EditWorkout from "./pages/EditWorkout.jsx";
 
+// Zaštita ruta (samo ulogovani)
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import RoleRoute from "./components/RoleRoute.jsx";
+
+// ADMIN stranice
+import AdminUsers from "./pages/AdminUsers.jsx";
+import AdminUserDetail from "./pages/AdminUserDetails.jsx";
 
 export default function App() {
   return (
@@ -60,6 +63,30 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* ADMIN rute */}
+
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["admin"]}>
+                <AdminUsers />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:id"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["admin"]}>
+                <AdminUserDetail />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
 
         {/* Fallback */}
         <Route path="*" element={<div className="container section">Not found</div>} />

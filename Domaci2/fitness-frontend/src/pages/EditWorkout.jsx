@@ -30,9 +30,9 @@ export default function EditWorkout() {
     const [calories, setCalories] = useState("");
 
     // --- UI state ---
-    const [loading, setLoading] = useState(true); // loading inicijalnog fetch-a
-    const [saving, setSaving] = useState(false); // loading na submit
-    const [err, setErr] = useState("");            // poruka o grešci (fetch ili submit)
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false); 
+    const [err, setErr] = useState("");           
 
     // Učitavanje postojećeg treninga
     const load = useCallback(async () => {
