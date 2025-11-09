@@ -122,7 +122,7 @@ export default function AdminUsers() {
                 <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:10, marginTop:16 }}>
                   <Button
                     variant="outline"
-                    disabled={page === 1}
+                    disabled={page === 1}xx
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                   >
                     ← Nazad

@@ -89,19 +89,22 @@ export default function Home() {
 
             <div className="hero-actions">
               {!user ? (
+                // Nije ulogovan - prikaži login + GitHub
                 <>
                   <Link className="btn" to="/login">Uloguj se ili nastavi kao gost</Link>
                   <a
                     className="btn btn-outline"
                     href="https://github.com/elab-development/internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288"
-                    target="_blank" rel="noreferrer"
+                    target="_blank"
+                    rel="noreferrer"
                   >
                     GitHub
                   </a>
                 </>
               ) : (
+                // Ulogovan  samo opcije vezane za treninge
                 <>
-                  <Link className="btn" to="/profile">Moj profil</Link>
+                  <Link className="btn" to="/workouts">Moji treninzi</Link>
                   <Link className="btn btn-outline" to="/workouts/new">Dodaj workout</Link>
                 </>
               )}

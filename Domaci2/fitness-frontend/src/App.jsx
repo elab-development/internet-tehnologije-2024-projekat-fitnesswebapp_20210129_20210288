@@ -1,22 +1,25 @@
 // src/App.jsx
 import { Routes, Route } from "react-router-dom";
-// Komponente
 import NavBar from "./components/NavBar.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 
-// Treninzi (workouts)
+// Workouts
 import MyWorkouts from "./pages/MyWorkouts.jsx";
 import CreateWorkout from "./pages/CreateWorkout.jsx";
 import EditWorkout from "./pages/EditWorkout.jsx";
 
-// Zaštita ruta (samo ulogovani)
+// Rute zaštite
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import RoleRoute from "./components/RoleRoute.jsx";
 
-// ADMIN stranice
+  // Admin - Users
 import AdminUsers from "./pages/AdminUsers.jsx";
 import AdminUserDetail from "./pages/AdminUserDetails.jsx";
+
+// Goals - Admin
+import AdminGoals from "./pages/AdminGoals.jsx";
+import AdminGoalForm from "./pages/AdminGoalForm.jsx";
 
 export default function App() {
   return (
@@ -24,11 +27,11 @@ export default function App() {
       <NavBar />
 
       <Routes>
-        {/* Public rute */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Lista svih korisnikovih treninga */}
+        {/* Workouts */}
         <Route
           path="/workouts"
           element={
@@ -39,8 +42,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Kreiranje novog treninga */}
         <Route
           path="/workouts/new"
           element={
@@ -51,8 +52,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Izmena postojećeg treninga */}
         <Route
           path="/workouts/:id/edit"
           element={
@@ -64,8 +63,7 @@ export default function App() {
           }
         />
 
-        {/* ADMIN rute */}
-
+        {/* Admin - Users */}
         <Route
           path="/admin/users"
           element={
@@ -87,6 +85,36 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["admin"]}>
+                <AdminGoals />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals/new"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["admin"]}>
+                <AdminGoalForm />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals/:id/edit"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["admin"]}>
+                <AdminGoalForm />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<div className="container section">Not found</div>} />
