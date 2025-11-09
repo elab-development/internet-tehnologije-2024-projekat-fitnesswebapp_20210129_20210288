@@ -10,58 +10,49 @@ class GoalController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
+            'user_id'     => 'required|exists:users,id',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'target_date' => 'required|date',
+            'status'      => 'required|string',
         ]);
 
-        $goal = Goal::create([
-            'user_id' => $validated['user_id'],
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'target_date' => $validated['target_date'],
-        ]);
+        $goal = Goal::create($validated);
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $goal,
-        ], 201);
+        return response()->json(['status' => 'success', 'data' => $goal], 201);
     }
 
     public function index()
     {
-        $goals = Goal::all(); 
-        return response()->json($goals, 200); 
+        return response()->json(Goal::all(), 200);
     }
 
     public function show($id)
     {
         $goal = Goal::find($id);
-
         if (!$goal) {
             return response()->json(['message' => 'Goal not found'], 404);
         }
-
         return response()->json($goal);
     }
 
     public function update(Request $request, $id)
     {
         $goal = Goal::find($id);
-
         if (!$goal) {
             return response()->json(['message' => 'Goal not found'], 404);
         }
 
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
+        $validated = $request->validate([
+            'title'       => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
-            'deadline' => 'nullable|date',
-            'status' => 'nullable|string',
+            'target_date' => 'nullable|date',
+            'status'      => 'nullable|string',
+            'user_id'     => 'sometimes|integer|exists:users,id',
         ]);
 
-        $goal->update($validatedData);
+        $goal->fill($validated);
+        $goal->save();
 
         return response()->json($goal);
     }
@@ -69,14 +60,11 @@ class GoalController extends Controller
     public function destroy($id)
     {
         $goal = Goal::find($id);
-
         if (!$goal) {
             return response()->json(['message' => 'Goal not found'], 404);
         }
 
         $goal->delete();
-
         return response()->json(['message' => 'Goal deleted'], 200);
     }
 }
-
