@@ -3,8 +3,6 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 /**
- * Primer:
- * <RoleRoute allowed={["member","admin"]}>...children...</RoleRoute>
  * Ako korisnik nema rolu iz 'allowed', vraća na početnu.
  */
 export default function RoleRoute({ allowed = [], children }) {

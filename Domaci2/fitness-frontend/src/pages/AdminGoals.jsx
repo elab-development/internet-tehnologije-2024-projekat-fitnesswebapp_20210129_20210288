@@ -1,57 +1,181 @@
+// src/pages/AdminGoals.jsx
+//
+// Admin: pregled i osnovno upravljanje ciljevima (goals)
+// - GET    /goals        -> fetchGoals()
+// - DELETE /goals/:id    -> deleteGoal(id)
+
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
+
+// UI komponente
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
+
+// API
 import { fetchGoals, deleteGoal } from "../api/goals";
 
-function pickTitle(g) {
-  return g?.title ?? g?.name ?? g?.goal ?? "(bez naziva)";
+// Pomoćne funkcije za izvlačenje podataka iz ciljeva
+
+function pickTitle(goal) {
+  return goal?.title ?? goal?.name ?? goal?.goal ?? "(bez naziva)";
 }
-function pickDate(g) {
+
+/**
+ * Vraća opis cilja ili "/" ako nije zadat.
+ */
+function pickDescription(goal) {
+  return goal?.description ?? "/";
+}
+
+/**
+ * Vraća rok (datum) cilja. Ako ga nema, vraća null.
+ */
+function pickDate(goal) {
+  return goal?.target_date ?? goal?.due_date ?? goal?.deadline ?? goal?.targetDate ?? null;
+}
+
+/**
+ * Vraća ime korisnika (ili ID) kome cilj pripada.
+ */
+function pickUser(goal) {
+  return goal?.user?.name ?? goal?.user_name ?? goal?.userId ?? goal?.user_id ?? "-";
+}
+
+
+// Tabela ciljeva
+
+/**
+ * Red u tabeli sa jednim ciljem i akcijama.
+ */
+function GoalsRow({ goal, onAskDelete, busyId }) {
+  const id = goal?.id;
+  const isBusy = String(busyId) === String(id);
+
   return (
-    g?.target_date ??
-    g?.due_date ??
-    g?.deadline ??
-    g?.deadline_at ??
-    g?.targetDate ??
-    g?.dueDate ??
-    null
+    <tr style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
+      <td style={{ padding: 8 }}>{id}</td>
+      <td style={{ padding: 8 }}>{pickTitle(goal)}</td>
+      <td
+        style={{
+          padding: 8,
+          maxWidth: 300,
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+        title={pickDescription(goal)} 
+      >
+        {pickDescription(goal)}
+      </td>
+      <td style={{ padding: 8 }}>{pickUser(goal)}</td>
+      <td style={{ padding: 8 }}>{pickDate(goal) ?? "-"}</td>
+
+      <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <Link className="btn btn-outline" to={`/goals/${id}/edit`} state={{ goal }}>
+          Uredi
+        </Link>
+
+        <Button
+          variant="ghost"
+          disabled={isBusy}
+          onClick={() => onAskDelete(id)}
+        >
+          {isBusy ? "Brišem…" : "Obriši"}
+        </Button>
+      </td>
+    </tr>
   );
 }
-function pickUser(g) {
-  return g?.user?.name ?? g?.user_name ?? g?.userId ?? g?.user_id ?? "-";
+
+/**
+ * Tabela ciljeva.
+ */
+function GoalsTable({ goals, onAskDelete, busyId }) {
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <thead>
+          <tr>
+            <th style={{ textAlign: "left", padding: 8 }}>ID</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Naziv</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Opis</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Korisnik</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Rok</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Akcije</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {goals.map((g) => (
+            <GoalsRow
+              key={g.id}
+              goal={g}
+              busyId={busyId}
+              onAskDelete={onAskDelete}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
-export default function AdminGoals() {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
+// Glavna komponenta stranice
 
+export default function AdminGoals() {
+  // --- Podaci iz API-ja (lista ciljeva) ---
+  const [goals, setGoals] = useState([]);
+
+  // --- UI stanja ---
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorText, setErrorText] = useState("");
+
+  // Modal za potvrdu brisanja
   const [confirmId, setConfirmId] = useState(null);
+
+  // ID reda koji se briše 
   const [busyId, setBusyId] = useState(null);
 
-  const load = useCallback(async () => {
+  // Učitavanje ciljeva iz API-ja
+  const loadGoals = useCallback(async () => {
     try {
-      setErr("");
-      setLoading(true);
+      setErrorText("");
+      setIsLoading(true);
+
       const list = await fetchGoals();
-      setItems(Array.isArray(list) ? list : []);
+      const safeArray = Array.isArray(list) ? list : [];
+
+      setGoals(safeArray);
     } catch {
-      setErr("Ne mogu da učitam ciljeve. Proveri backend ili privilegije.");
+      setErrorText("Ne mogu da učitam ciljeve. Proveri backend ili privilegije.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  // Prvo učitavanje
+  useEffect(() => {
+    loadGoals();
+  }, [loadGoals]);
 
-  const doDelete = async () => {
+  /**
+   * Potvrđeno brisanje cilja.
+   */
+  const handleConfirmDelete = async () => {
+    // nema šta da briše
     if (!confirmId) return;
+
     try {
       setBusyId(confirmId);
+
+      // Pozovi backend
       await deleteGoal(confirmId);
-      setItems(prev => prev.filter(x => String(x.id) !== String(confirmId)));
+
+      // Ukloni obrisani element iz lokalne liste
+      setGoals((prev) => prev.filter((g) => String(g.id) !== String(confirmId)));
+
+      // Zatvori modal
       setConfirmId(null);
     } catch {
       alert("Brisanje cilja nije uspelo.");
@@ -60,72 +184,86 @@ export default function AdminGoals() {
     }
   };
 
+// Renderovanje stranice
+
+  // LOADING
+  if (isLoading) {
+    return (
+      <div className="container section">
+        <h2 style={{ marginTop: 0 }}>Admin · Goals</h2>
+        <p>Učitavam ciljeve…</p>
+      </div>
+    );
+  }
+
+  // ERROR
+  if (errorText) {
+    return (
+      <div className="container section">
+        <h2 style={{ marginTop: 0 }}>Admin · Goals</h2>
+        <p style={{ color: "#ff6b6b" }}>{errorText}</p>
+        <Button onClick={loadGoals}>Pokušaj ponovo</Button>
+      </div>
+    );
+  }
+
+  // SUCCESS (može biti empty ili sa podacima)
+  const isEmpty = goals.length === 0;
+
   return (
     <div className="container section">
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-        <h2 style={{ margin:0 }}>Admin · Goals</h2>
-        <div style={{ display:"flex", gap:8 }}>
-          <Link to="/goals/new" className="btn">+ Novi cilj</Link>
-          <Button variant="outline" onClick={load}>Osveži</Button>
+      {/* Header i akcije (Novi, Osveži) */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
+        <h2 style={{ margin: 0 }}>Admin · Goals</h2>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Link to="/goals/new" className="btn">
+            + Novi cilj
+          </Link>
+          <Button variant="outline" onClick={loadGoals}>
+            Osveži
+          </Button>
         </div>
       </div>
 
-      {loading && <p>Učitavam ciljeve…</p>}
-      {err && <p style={{ color:"#ff6b6b" }}>{err}</p>}
+      {/* Kartica sa sadržajem */}
+      <Card>
+        {isEmpty ? (
+          // PRAZNO STANJE
+          <p style={{ margin: 0, opacity: 0.85 }}>
+            Trenutno nema ciljeva.
+          </p>
+        ) : (
+          // TABELA SA CILJEVIMA
+          <GoalsTable goals={goals} busyId={busyId} onAskDelete={setConfirmId} />
+        )}
+      </Card>
 
-      {!loading && !err && (
-        <Card>
-          {!items.length ? (
-            <p style={{ margin: 0, opacity:.85 }}>Trenutno nema ciljeva.</p>
-          ) : (
-            <div style={{ overflowX:"auto" }}>
-              <table style={{ width:"100%", borderCollapse:"collapse" }}>
-                <thead>
-                  <tr>
-                    <th style={{ textAlign:"left", padding:8 }}>ID</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Naziv</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Korisnik</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Rok</th>
-                    <th style={{ textAlign:"left", padding:8 }}>Akcije</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(g => (
-                    <tr key={g.id} style={{ borderTop:"1px solid rgba(255,255,255,.08)" }}>
-                      <td style={{ padding:8 }}>{g.id}</td>
-                      <td style={{ padding:8 }}>{pickTitle(g)}</td>
-                      <td style={{ padding:8 }}>{pickUser(g)}</td>
-                      <td style={{ padding:8 }}>{pickDate(g) ?? "-"}</td>
-                      <td style={{ padding:8, display:"flex", gap:8, flexWrap:"wrap" }}>
-                        <Link className="btn btn-outline" to={`/goals/${g.id}/edit`} state={{ goal: g }}>
-                          Uredi
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          disabled={busyId === g.id}
-                          onClick={() => setConfirmId(g.id)}
-                        >
-                          {busyId === g.id ? "Brišem…" : "Obriši"}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      )}
-
+      {/* Modal: Potvrda brisanja - REUSABLE KOMPONENTA*/}
       <Modal
         open={!!confirmId}
         title="Potvrda brisanja cilja"
         onClose={() => setConfirmId(null)}
       >
         <p>Da li sigurno želiš da obrišeš ovaj cilj?</p>
-        <div style={{ display:"flex", justifyContent:"flex-end", gap:10, marginTop:12 }}>
-          <button className="btn btn-outline" onClick={() => setConfirmId(null)}>Ne</button>
-          <button className="btn" onClick={doDelete}>Da, obriši</button>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+          <button
+            className="btn btn-outline"
+            onClick={() => setConfirmId(null)}
+          >
+            Ne
+          </button>
+
+        <button className="btn" onClick={handleConfirmDelete}>
+            Da, obriši
+          </button>
         </div>
       </Modal>
     </div>
