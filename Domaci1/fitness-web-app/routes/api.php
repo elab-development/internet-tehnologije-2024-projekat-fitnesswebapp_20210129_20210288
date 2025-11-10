@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WorkoutController;
@@ -7,49 +8,45 @@ use App\Http\Controllers\ExerciseController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WeatherController;
 
-// Rute dostupne ulogovanim korisnicima (guest, member, admin)
-Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':guest'])
-    ->group(function () {
-        Route::get('/workouts', [WorkoutController::class, 'index']); // Prikaz svih treninga
-        Route::get('/workouts/{id}', [WorkoutController::class, 'show']); // Prikaz jednog treninga
-    });
-
-// Ruta dostupna svima - bez tokena
+// --- PUBLIC (bez tokena)
 Route::get('/weather/{city}', [WeatherController::class, 'getWeather']);
-
-// Rute za registraciju i prijavu
-Route::post('/register', [AuthController::class, 'register']); // Registracija korisnika
-Route::post('/login', [AuthController::class, 'login']); // Prijava korisnika
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/guest/login', [AuthController::class, 'loginAsGuest']);
 
-// Logout ruta (samo za ulogovane korisnike)
+// --- LOGOUT 
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
-// RUTE ZA ČLANOVE (MEMBER)
+// --- WORKOUTS: dostupno SVIM ulogovanim korisnicima (guest, member, admin)
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/workouts', [WorkoutController::class, 'index']);    
+    Route::get('/workouts/{id}', [WorkoutController::class, 'show']); 
+});
+
+// --- MEMBER (i admin)
 Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':member'])
     ->group(function () {
-        Route::post('/users/workouts', [WorkoutController::class, 'store']); // Dodavanje treninga
-        Route::put('/users/workouts/{id}', [WorkoutController::class, 'update']); // Ažuriranje treninga
-        Route::delete('/users/workouts/{id}', [WorkoutController::class, 'destroy']); // Brisanje treninga
-
-        // Rute za upravljanje korisničkim treninzima
+        // Users workouts CRUD (sopstveni ili admin)
+        Route::post('/users/workouts', [WorkoutController::class, 'store']);
+        Route::put('/users/workouts/{id}', [WorkoutController::class, 'update']);
+        Route::delete('/users/workouts/{id}', [WorkoutController::class, 'destroy']);
         Route::get('/users/workouts', [WorkoutController::class, 'getUserWorkouts']);
 
-        // Rute za vežbe (CRUD)
+        // Exercises CRUD
         Route::apiResource('exercises', ExerciseController::class);
     });
 
-// RUTE ZA ADMINISTRATORA (ADMIN)
+// --- ADMIN
 Route::middleware(['auth:sanctum', \App\Http\Middleware\RoleMiddleware::class . ':admin'])
     ->group(function () {
-        Route::get('/admin/users', [AdminController::class, 'listUsers']); // Lista svih korisnika
-        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']); // Brisanje korisnika
+        Route::get('/admin/users', [AdminController::class, 'listUsers']);
+        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
 
-        // Rute za ciljeve (CRUD)
+        // Goals CRUD
         Route::apiResource('goals', GoalController::class);
     });
 
-// TEST RUTA - Provera da li API radi
+// --- TEST
 Route::get('/test', function () {
     return response()->json(['message' => 'API radi!']);
 });

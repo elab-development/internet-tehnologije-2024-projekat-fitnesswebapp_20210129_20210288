@@ -110,8 +110,8 @@ export default function MyWorkouts() {
               </p>
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {w.duration != null && <span className="user-pill">⏱ {w.duration} min</span>}
-                {w.calories_burned != null && <span className="user-pill">🔥 {w.calories_burned} kcal</span>}
+                {w.duration != null && <span className="user-pill"> {w.duration} min</span>}
+                {w.calories_burned != null && <span className="user-pill"> {w.calories_burned} kcal</span>}
               </div>
 
               <div style={{ display: "flex", gap: 8, marginTop: 12 }}>

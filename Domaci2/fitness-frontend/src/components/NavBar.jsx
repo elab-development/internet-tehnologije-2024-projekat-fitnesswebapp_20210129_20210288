@@ -1,4 +1,3 @@
-// src/components/NavBar.jsx
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo.png";
@@ -26,8 +25,8 @@ export default function NavBar() {
             Home
           </NavLink>
 
-          {/* Workouts – member/admin */}
-          {(role === "member" || role === "admin") && (
+          {/* Workouts – guest, member, admin */}
+          {(role === "guest" || role === "member" || role === "admin") && (
             <NavLink
               to="/workouts"
               className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
@@ -36,7 +35,7 @@ export default function NavBar() {
             </NavLink>
           )}
 
-          {/* Exercises – member/admin */}
+          {/* Exercises – samo member/admin */}
           {(role === "member" || role === "admin") && (
             <NavLink
               to="/exercises"

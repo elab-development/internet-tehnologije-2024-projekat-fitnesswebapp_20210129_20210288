@@ -125,7 +125,7 @@ export default function AdminUsers() {
                     disabled={page === 1}xx
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                   >
-                    ← Nazad
+                    Nazad
                   </Button>
                   <span>Strana {page} od {totalPages}</span>
                   <Button
@@ -133,7 +133,7 @@ export default function AdminUsers() {
                     disabled={page === totalPages}
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   >
-                    Napred →
+                    Napred
                   </Button>
                 </div>
               )}
