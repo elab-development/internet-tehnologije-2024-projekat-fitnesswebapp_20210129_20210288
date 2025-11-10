@@ -1,27 +1,30 @@
-// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./pages/Login.jsx";
 
-// Public workouts (vidljivo svim ulogama: guest/member/admin)
+/* PUBLIC WORKOUTS (ovo već imaš) */
 import PublicWorkouts from "./pages/PublicWorkouts.jsx";
 import PublicWorkoutDetail from "./pages/PublicWorkoutDetail.jsx";
 
-// Panel za svoje treninge (member/admin)
+/* MY WORKOUTS (ovo već imaš) */
 import MyWorkouts from "./pages/MyWorkouts.jsx";
 import CreateWorkout from "./pages/CreateWorkout.jsx";
 import EditWorkout from "./pages/EditWorkout.jsx";
 
-// Zaštita
+/* ZAŠTITA */
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import RoleRoute from "./components/RoleRoute.jsx";
 
-// Admin
+/* ADMIN */
 import AdminUsers from "./pages/AdminUsers.jsx";
 import AdminUserDetail from "./pages/AdminUserDetails.jsx";
 import AdminGoals from "./pages/AdminGoals.jsx";
 import AdminGoalForm from "./pages/AdminGoalForm.jsx";
+
+/* NOVO: EXERCISES STRANICE */
+import Exercises from "./pages/Exercises.jsx";
+import ExerciseForm from "./pages/ExerciseForm.jsx";
 
 export default function App() {
   return (
@@ -29,11 +32,11 @@ export default function App() {
       <NavBar />
 
       <Routes>
-        {/* Public rute */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        {/* WORKOUTS – dostupno SVIM ulogama (guest/member/admin) */}
+        {/* Workouts dostupno svima (guest/member/admin) */}
         <Route
           path="/workouts"
           element={
@@ -55,7 +58,7 @@ export default function App() {
           }
         />
 
-        {/* MOJI TRENINZI – samo member/admin */}
+        {/* My workouts (member/admin) */}
         <Route
           path="/users/workouts"
           element={
@@ -87,7 +90,39 @@ export default function App() {
           }
         />
 
-        {/* ADMIN */}
+        {/* NOVO: Exercises (lista vidljiva member/admin; guest nema) */}
+        <Route
+          path="/exercises"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["member", "admin"]}>
+                <Exercises />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exercises/new"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["member", "admin"]}>
+                <ExerciseForm />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exercises/:id/edit"
+          element={
+            <ProtectedRoute>
+              <RoleRoute allowed={["member", "admin"]}>
+                <ExerciseForm />
+              </RoleRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin */}
         <Route
           path="/admin/users"
           element={
