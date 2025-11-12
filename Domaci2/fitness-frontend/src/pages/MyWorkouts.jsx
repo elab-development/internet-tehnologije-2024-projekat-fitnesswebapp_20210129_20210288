@@ -1,58 +1,44 @@
-// src/pages/MyWorkouts.jsx
-
-// Panel sa listom korisnikovih treninga (member/admin).
-// - GET /users/workouts (samo sopstveni treninzi)
-// - DELETE /users/workouts/:id (brisanje uz potvrdu)
-
+// src/pages/PublicWorkouts.jsx
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Modal from "../components/ui/Modal";
-import { fetchMyWorkouts, deleteWorkout } from "../api/workouts";
+import { fetchWorkouts, deleteWorkout } from "../api/workouts";
+import { useAuth } from "../context/AuthContext";
 
-export default function MyWorkouts() {
-  // --- Podaci ---
+export default function PublicWorkouts() {
+  const { user } = useAuth();
+  const role = user?.role;
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // --- UI stanje ---
   const [err, setErr] = useState("");
-  const [confirmId, setConfirmId] = useState(null); // id čiji delete potvrđujemo
-  const [busyId, setBusyId] = useState(null);       // id koji se briše (spinner/disable)
 
-  // --- Učitavanje liste ---
+  // stanje za brisanje
+  const [confirmId, setConfirmId] = useState(null);
+
   const load = useCallback(async () => {
-    setLoading(true);
-    setErr("");
     try {
-      const list = await fetchMyWorkouts(); // GET /users/workouts
-      if (Array.isArray(list)) {
-        setItems(list);
-      } else if (list?.data && Array.isArray(list.data)) {
-        setItems(list.data);
-      } else {
-        setItems([]); // fallback
-      }
-    } catch (e) {
-      console.error("Greška u učitavanju:", e);
-      setErr("Ne mogu da učitam tvoje treninge. Kreiraj trening ili pokušaj ponovo.");
+      setErr("");
+      setLoading(true);
+      const list = await fetchWorkouts(); // GET /workouts
+      setItems(Array.isArray(list) ? list : (list?.data ?? []));
+    } catch {
+      setErr("Ne mogu da učitam treninge.");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
-  // --- Potvrđeno brisanje ---
   const doDelete = async () => {
     if (!confirmId) return;
     try {
       setBusyId(confirmId);
       await deleteWorkout(confirmId); // DELETE /users/workouts/:id
-      setItems((prev) => prev.filter((x) => x.id !== confirmId));
+      setItems(prev => prev.filter(x => String(x.id) !== String(confirmId)));
       setConfirmId(null);
     } catch {
       alert("Brisanje nije uspelo. Pokušaj ponovo.");
@@ -61,77 +47,67 @@ export default function MyWorkouts() {
     }
   };
 
-  // --- Render stanja ---
-  if (loading) {
-    return (
-      <div className="container section">
-        <h2 style={{ marginTop: 0 }}>Moji treninzi</h2>
-        <p>Učitavam…</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container section">
-      {/* Naslov + dugme */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-        <h2 style={{ margin: 0 }}>Moji treninzi</h2>
-        <Link to="/workouts/new" className="btn">+ Novi trening</Link>
+        <h2 style={{ margin: 0 }}>Workouts</h2>
+
+        {(role === "member" || role === "admin") && (
+          <Link to="/workouts/new" className="btn">+ Novi trening</Link>
+        )}
+
+        <Button variant="outline" onClick={load}>Osveži</Button>
       </div>
 
-      {/* Greška */}
-      {err && (
-        <Card>
-          <p style={{ color: "#ff6b6b", margin: 0 }}>{err}</p>
-          <div style={{ marginTop: 10 }}>
-            <Button onClick={load}>Pokušaj ponovo</Button>
-          </div>
-        </Card>
-      )}
+      {loading && <p>Učitavam…</p>}
+      {err && <p style={{ color: "#ff6b6b" }}>{err}</p>}
 
-      {/* Prazna lista */}
-      {!err && items.length === 0 && (
+      {!loading && !err && items.length === 0 && (
         <Card>
           <p style={{ margin: 0, opacity: 0.85 }}>
-            Još uvek nemaš nijedan trening. Klikni na <b>„+ Novi trening“</b> da dodaš prvi.
+            Nema treninga za prikaz.
+            {(role === "member" || role === "admin")
+              ? " Dodaj svoj prvi trening."
+              : " Uloguj se kao member da dodaješ svoje treninge."}
           </p>
         </Card>
       )}
 
-      {/* Lista postojećih */}
-      {!err && items.length > 0 && (
-        <div className="grid-3">
-          {items.map((w) => (
+      <div className="grid-3">
+        {items.map((w) => {
+          const isOwner = user?.id && w?.user_id === user.id;
+          return (
             <Card key={w.id}>
-              <h3 style={{ marginTop: 0 }}>{w.name || "Bez naziva"}</h3>
-
+              <h3 style={{ marginTop: 0 }}>{w.name ?? "Bez naziva"}</h3>
               <p style={{ opacity: 0.8, margin: "6px 0 10px" }}>
-                {w.description || "Bez opisa."}
+                {w.description ?? "Bez opisa."}
               </p>
-
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {w.duration != null && <span className="user-pill"> {w.duration} min</span>}
-                {w.calories_burned != null && <span className="user-pill"> {w.calories_burned} kcal</span>}
+                {w.duration != null && <span className="user-pill">{w.duration} min</span>}
+                {w.calories_burned != null && <span className="user-pill">{w.calories_burned} kcal</span>}
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-                <Link to={`/workouts/${w.id}/edit`} className="btn btn-outline">
-                  Uredi
-                </Link>
-                <Button
-                  variant="ghost"
-                  onClick={() => setConfirmId(w.id)}
-                  disabled={busyId === w.id}
-                >
-                  {busyId === w.id ? "Brišem..." : "Obriši"}
-                </Button>
+              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                <Link to={`/workouts/${w.id}`} className="btn btn-outline">Detalj</Link>
+
+                {(role === "member" || role === "admin") && isOwner && (
+                  <>
+                    <Link to={`/workouts/${w.id}/edit`} className="btn btn-outline">Uredi</Link>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setConfirmId(w.id)}
+                      disabled={busyId === w.id}
+                    >
+                      {busyId === w.id ? "Brišem…" : "Obriši"}
+                    </Button>
+                  </>
+                )}
               </div>
             </Card>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
-      {/* Modal za potvrdu */}
       <Modal
         open={!!confirmId}
         title="Potvrda brisanja"

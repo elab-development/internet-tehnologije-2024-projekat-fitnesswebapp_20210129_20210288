@@ -6,6 +6,6 @@
     <title>Welcome</title>
 </head>
 <body>
-    <h1>LARAVEL DOMACI</h1>
+    <h1>Laravel uspešno pokrenut!</h1>
 </body>
 </html>

@@ -1,4 +1,7 @@
 // src/pages/PublicWorkoutDetail.jsx
+//
+// Detalj treninga (guest/member/admin).
+
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Card from "../components/ui/Card";
@@ -21,7 +24,7 @@ export default function PublicWorkoutDetail() {
       try {
         setErr("");
         setLoading(true);
-        const data = await fetchWorkout(id); // GET /workouts/:id
+        const data = await fetchWorkout(id);
         if (!active) return;
         setItem(data?.data ?? data ?? null);
       } catch {
@@ -67,8 +70,9 @@ export default function PublicWorkoutDetail() {
           {item.description ?? "Bez opisa."}
         </p>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-          {item.duration != null && <span className="user-pill"> {item.duration} min</span>}
-          {item.calories_burned != null && <span className="user-pill"> {item.calories_burned} kcal</span>}
+          {item.duration != null && <span className="user-pill">{item.duration} min</span>}
+          {item.calories_burned != null && <span className="user-pill">{item.calories_burned} kcal</span>}
+          {item.status && <span className="user-pill">Status: {item.status}</span>} {/* NOVO */}
         </div>
       </Card>
     </div>

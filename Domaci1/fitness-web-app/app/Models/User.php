@@ -12,44 +12,37 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',      // Ime korisnika
-        'email',     // Email korisnika
-        'password',  // Lozinka korisnika
-        'role',      // Uloga korisnika (admin, član, gost)
-        'fitness_level', // Nivo fizičke spremnosti korisnika
+        'name',             // Ime korisnika
+        'email',            // Email korisnika
+        'password',         // Lozinka korisnika (hash)
+        'role',             // Uloga (admin, member, guest)
+        'fitness_level',    // Nivo fizičke spremnosti
+        'email_verified_at',// ⬅ dozvoli popunjavanje prilikom registracije
+        'remember_token',   // ⬅ dozvoli generisanje tokena
     ];
 
-    // Atributi koji će biti sakriveni prilikom serijalizacije modela
     protected $hidden = [
-        'password',        // Lozinka korisnika
-        'remember_token',  // Token za pamćenje korisnika
+        'password',
+        'remember_token',
     ];
 
-    // Polja koja se automatski kastuju u odgovarajući tip
     protected $casts = [
-        'email_verified_at' => 'datetime', // Polje za verifikaciju emaila se konvertuje u datetime
-        'password' => 'hashed',            // Lozinka se tretira kao hash
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
-    // Definiše vezu sa modelom Workout
     public function hasRole($role)
     {
         return $this->role === $role;
     }
 
-    /**
-     * Proverava da li je korisnik administrator
-     */
     public function isAdmin()
     {
-        return $this->role === 'admin';  // Vraća true ako je korisnik admin
+        return $this->role === 'admin';
     }
 
-    /**
-     * Proverava da li je korisnik član
-     */
     public function isMember()
     {
-        return $this->role === 'member';  // Vraća true ako je korisnik član
+        return $this->role === 'member';
     }
 }

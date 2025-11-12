@@ -1,23 +1,32 @@
 // src/pages/PublicWorkouts.jsx
+//
+// Lista treninga (guest/member/admin).
+
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
-import { fetchWorkouts } from "../api/workouts";
+import Modal from "../components/ui/Modal";
+import { fetchWorkouts, deleteWorkout } from "../api/workouts";
 import { useAuth } from "../context/AuthContext";
 
 export default function PublicWorkouts() {
   const { user } = useAuth();
-  const role = user?.role;
+  const role = user?.role; // "guest" | "member" | "admin"
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+
+  // delete
+  const [confirmId, setConfirmId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
 
   const load = useCallback(async () => {
     try {
       setErr("");
       setLoading(true);
-      const list = await fetchWorkouts(); // GET /workouts
+      const list = await fetchWorkouts();
       setItems(Array.isArray(list) ? list : (list?.data ?? []));
     } catch {
       setErr("Ne mogu da učitam treninge.");
@@ -28,12 +37,25 @@ export default function PublicWorkouts() {
 
   useEffect(() => { load(); }, [load]);
 
+  const doDelete = async () => {
+    if (!confirmId) return;
+    try {
+      setBusyId(confirmId);
+      await deleteWorkout(confirmId); // DELETE /users/workouts/:id
+      setItems(prev => prev.filter(x => String(x.id) !== String(confirmId)));
+      setConfirmId(null);
+    } catch {
+      alert("Brisanje nije uspelo. Pokušaj ponovo.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   return (
     <div className="container section">
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
         <h2 style={{ margin: 0 }}>Workouts</h2>
 
-        {/* CTA za member/admin: dodavanje novog */}
         {(role === "member" || role === "admin") && (
           <Link to="/workouts/new" className="btn">+ Novi trening</Link>
         )}
@@ -48,34 +70,61 @@ export default function PublicWorkouts() {
         <Card>
           <p style={{ margin: 0, opacity: 0.85 }}>
             Nema treninga za prikaz.
-            {(role === "member" || role === "admin") ? " Dodaj svoj prvi trening." : " Uloguj se kao member da dodaješ svoje treninge."}
+            {(role === "member" || role === "admin")
+              ? " Dodaj svoj prvi trening."
+              : " Uloguj se kao member da dodaješ svoje treninge."}
           </p>
         </Card>
       )}
 
       <div className="grid-3">
-        {items.map((w) => (
-          <Card key={w.id}>
-            <h3 style={{ marginTop: 0 }}>{w.name ?? "Bez naziva"}</h3>
-            <p style={{ opacity: 0.8, margin: "6px 0 10px" }}>
-              {w.description ?? "Bez opisa."}
-            </p>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {w.duration != null && <span className="user-pill">{w.duration} min</span>}
-              {w.calories_burned != null && <span className="user-pill"> {w.calories_burned} kcal</span>}
-            </div>
+        {items.map((w) => {
+          const isOwner = user?.id && w?.user_id === user.id;
+          return (
+            <Card key={w.id}>
+              <h3 style={{ marginTop: 0 }}>{w.name ?? "Bez naziva"}</h3>
+              <p style={{ opacity: 0.8, margin: "6px 0 10px" }}>
+                {w.description ?? "Bez opisa."}
+              </p>
 
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-              <Link to={`/workouts/${w.id}`} className="btn btn-outline">Detalj</Link>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {w.duration != null && <span className="user-pill">{w.duration} min</span>}
+                {w.calories_burned != null && <span className="user-pill">{w.calories_burned} kcal</span>}
+                {w.status && <span className="user-pill">Status: {w.status}</span>} {/* NOVO */}
+              </div>
 
-              {/* Akcije se NE prikazuju gostu */}
-              {(role === "member" || role === "admin") && (
-                <Link to={`/workouts/${w.id}/edit`} className="btn btn-outline">Uredi</Link>
-              )}
-            </div>
-          </Card>
-        ))}
+              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                <Link to={`/workouts/${w.id}`} className="btn btn-outline">Detalj</Link>
+
+                {(role === "member" || role === "admin") && isOwner && (
+                  <>
+                    <Link to={`/workouts/${w.id}/edit`} className="btn btn-outline">Uredi</Link>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setConfirmId(w.id)}
+                      disabled={busyId === w.id}
+                    >
+                      {busyId === w.id ? "Brišem…" : "Obriši"}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
+
+      <Modal
+        open={!!confirmId}
+        title="Potvrda brisanja"
+        onClose={() => setConfirmId(null)}
+      >
+        <p>Da li sigurno želiš da obrišeš ovaj trening?</p>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+          <button className="btn btn-outline" onClick={() => setConfirmId(null)}>Ne</button>
+          <button className="btn" onClick={doDelete}>Da, obriši</button>
+        </div>
+      </Modal>
     </div>
   );
 }

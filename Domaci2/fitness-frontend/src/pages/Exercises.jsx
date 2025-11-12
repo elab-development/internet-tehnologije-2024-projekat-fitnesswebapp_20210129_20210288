@@ -1,4 +1,3 @@
-// src/pages/Exercises.jsx
 // Lista vežbi sa filtriranjem, sortiranjem i paginacijom (sve na front-endu).
 
 import { useEffect, useMemo, useState, useCallback } from "react";
@@ -39,36 +38,30 @@ export default function Exercises() {
   const { user } = useAuth();
   const role = user?.role;
 
-  // podaci
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // filteri
   const [typeFilter, setTypeFilter] = useState("");
   const [query, setQuery] = useState("");
   const [showMineOnly, setShowMineOnly] = useState(false);
 
-  // sortiranje
   const [sortBy, setSortBy] = useState("name");
-  const [sortDir, setSortDir] = useState("asc"); // asc|desc
+  const [sortDir, setSortDir] = useState("asc");
 
-  // paginacija
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // modal delete
   const [confirmId, setConfirmId] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
-  // učitavanje liste (bez server filtera, sve se radi lokalno)
   const load = useCallback(async () => {
     try {
       setErr("");
       setLoading(true);
       const list = await fetchExercises({});
       setItems(Array.isArray(list) ? list : (list?.data ?? []));
-      setPage(1); // reset na prvu stranu posle osvežavanja
+      setPage(1);
     } catch {
       setErr("Ne mogu da učitam vežbe.");
     } finally {
@@ -78,29 +71,33 @@ export default function Exercises() {
 
   useEffect(() => { load(); }, [load]);
 
-  // primena filtera
+  // Filtriranje (uključuje "Samo moji" sa fallback-ovima)
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
     return items.filter((ex) => {
-      if (showMineOnly && ex?.workout?.user_id !== user?.id) return false;
+      const ownerId =
+        ex?.workout?.user_id ?? ex?.workout_user_id ?? ex?.user_id ?? null;
+
+      if (showMineOnly && ownerId !== user?.id) return false;
+
       const okType = !typeFilter || String(ex.type).toLowerCase() === typeFilter;
       const okQuery =
         !q ||
         String(ex.name ?? "").toLowerCase().includes(q) ||
         String(ex.description ?? "").toLowerCase().includes(q);
+
       return okType && okQuery;
     });
   }, [items, typeFilter, query, showMineOnly, user?.id]);
 
-  // sortiranje
+  // Sortiranje
   const sorted = useMemo(() => {
     const arr = [...filtered];
     arr.sort((a, b) => {
       const av = a?.[sortBy];
       const bv = b?.[sortBy];
 
-      // numeričko kad ima smisla
       const isNum = sortBy === "id" || sortBy === "reps_or_time";
       let cmp;
       if (isNum) {
@@ -117,7 +114,7 @@ export default function Exercises() {
     return arr;
   }, [filtered, sortBy, sortDir]);
 
-  // paginacija
+  // Paginacija
   const total = sorted.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -141,7 +138,6 @@ export default function Exercises() {
 
   return (
     <div className="container section">
-      {/* naslov + akcije */}
       <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
         <h2 style={{ margin: 0 }}>Exercises</h2>
 
@@ -151,7 +147,6 @@ export default function Exercises() {
 
         <Button variant="outline" onClick={load}>Osveži</Button>
 
-        {/* filter bar */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginLeft: "auto" }}>
           <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <input
@@ -203,7 +198,14 @@ export default function Exercises() {
 
           <Button
             variant="outline"
-            onClick={() => { setTypeFilter(""); setQuery(""); setShowMineOnly(false); setSortBy("name"); setSortDir("asc"); setPage(1); }}
+            onClick={() => {
+              setTypeFilter("");
+              setQuery("");
+              setShowMineOnly(false);
+              setSortBy("name");
+              setSortDir("asc");
+              setPage(1);
+            }}
             title="Reset"
           >
             Reset
@@ -265,7 +267,6 @@ export default function Exercises() {
                 </table>
               </div>
 
-              {/* paginator */}
               <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", alignItems: "center", marginTop: 10 }}>
                 <Button
                   variant="outline"
