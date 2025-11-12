@@ -1,8 +1,6 @@
 // src/pages/AdminGoals.jsx
 //
 // Admin: pregled i osnovno upravljanje ciljevima (goals)
-// - GET    /goals        -> fetchGoals()
-// - DELETE /goals/:id    -> deleteGoal(id)
 
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -42,6 +40,12 @@ function pickUser(goal) {
   return goal?.user?.name ?? goal?.user_name ?? goal?.userId ?? goal?.user_id ?? "-";
 }
 
+/**
+ * Vraća status cilja.
+ */
+function pickStatus(goal) {
+  return goal?.status ?? "-";
+}
 
 // Tabela ciljeva
 
@@ -64,12 +68,14 @@ function GoalsRow({ goal, onAskDelete, busyId }) {
           textOverflow: "ellipsis",
           overflow: "hidden",
         }}
-        title={pickDescription(goal)} 
+        title={pickDescription(goal)}
       >
         {pickDescription(goal)}
       </td>
       <td style={{ padding: 8 }}>{pickUser(goal)}</td>
       <td style={{ padding: 8 }}>{pickDate(goal) ?? "-"}</td>
+      {/* NOVO: status kolona */}
+      <td style={{ padding: 8 }}>{pickStatus(goal)}</td>
 
       <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
         <Link className="btn btn-outline" to={`/goals/${id}/edit`} state={{ goal }}>
@@ -102,6 +108,7 @@ function GoalsTable({ goals, onAskDelete, busyId }) {
             <th style={{ textAlign: "left", padding: 8 }}>Opis</th>
             <th style={{ textAlign: "left", padding: 8 }}>Korisnik</th>
             <th style={{ textAlign: "left", padding: 8 }}>Rok</th>
+            <th style={{ textAlign: "left", padding: 8 }}>Status</th>
             <th style={{ textAlign: "left", padding: 8 }}>Akcije</th>
           </tr>
         </thead>
@@ -134,7 +141,7 @@ export default function AdminGoals() {
   // Modal za potvrdu brisanja
   const [confirmId, setConfirmId] = useState(null);
 
-  // ID reda koji se briše 
+  // ID reda koji se briše
   const [busyId, setBusyId] = useState(null);
 
   // Učitavanje ciljeva iz API-ja
@@ -184,7 +191,7 @@ export default function AdminGoals() {
     }
   };
 
-// Renderovanje stranice
+  // Renderovanje stranice
 
   // LOADING
   if (isLoading) {
@@ -261,7 +268,7 @@ export default function AdminGoals() {
             Ne
           </button>
 
-        <button className="btn" onClick={handleConfirmDelete}>
+          <button className="btn" onClick={handleConfirmDelete}>
             Da, obriši
           </button>
         </div>

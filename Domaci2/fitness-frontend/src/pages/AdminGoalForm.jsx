@@ -22,6 +22,12 @@ function coalesceDate(g) {
   );
 }
 
+// pending / completed
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "completed", label: "Completed" },
+];
+
 export default function AdminGoalForm() {
   const { id } = useParams();
   const isEdit = Boolean(id);
@@ -34,6 +40,7 @@ export default function AdminGoalForm() {
   const [description, setDescription] = useState(initialGoal?.description ?? "");
   const [targetDate, setTargetDate] = useState(coalesceDate(initialGoal)); // očekujemo "YYYY-MM-DD"
   const [userId, setUserId] = useState(initialGoal?.user_id ?? initialGoal?.userId ?? "");
+  const [status, setStatus] = useState(initialGoal?.status ?? "pending");
 
   // users za dropdown
   const [users, setUsers] = useState([]);
@@ -72,6 +79,7 @@ export default function AdminGoalForm() {
         setDescription(g?.description ?? "");
         setTargetDate(coalesceDate(g));
         setUserId(g?.user_id ?? g?.userId ?? "");
+        setStatus(g?.status ?? "pending");
       } catch {
         if (active) setErr("Ne mogu da učitam cilj.");
       } finally {
@@ -101,6 +109,7 @@ export default function AdminGoalForm() {
       title: title.trim(),
       description: description.trim(),
       user_id: Number(userId),
+      status, // <<< NOVO: status ide na backend
 
       // snake_case
       target_date: dateStr,
@@ -176,6 +185,14 @@ export default function AdminGoalForm() {
                 ]}
               />
             </div>
+
+            <SelectInput
+              label="Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              options={STATUS_OPTIONS}
+              style={{ marginTop: 10 }}
+            />
 
             {err && <p style={{ color: "#ff6b6b", marginTop: 8 }}>{err}</p>}
 

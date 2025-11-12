@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 export default function RoleRoute({ allowed = [], children }) {
   const { user } = useAuth();
 
-  // nema user-a → na login
+  // nema user-a idi na login
   if (!user) return <Navigate to="/login" replace />;
 
   // ako je lista prazna, propuštamo sve ulogovane
