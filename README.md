@@ -1,12 +1,7 @@
 # REBEL Fitness — Web Aplikacija za Praćenje Treninga
 
 Ovaj projekat predstavlja **full-stack fitness aplikaciju** za praćenje treninga, vežbi i ciljeva.  
-Napravljen je kao kombinacija **Laravel** (backend API) i **React** (frontend SPA) tehnologija.
-
----
-
-## Struktura projekta
-
+Napravljen je kao kombinacija **Laravel** (backend API) i **React** (frontend) tehnologija.
 
 ---
 
@@ -18,7 +13,6 @@ Napravljen je kao kombinacija **Laravel** (backend API) i **React** (frontend SP
 - PHP ≥ 8.2  
 - Composer  
 - MySQL / MariaDB  
-- Node.js (za frontend deo, kasnije)
 
 #### Instalacija i pokretanje
 ```bash
@@ -41,11 +35,11 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-Server se pokreće na http://127.0.0.1:8000
+Server se pokreće na **http://127.0.0.1:8000**
 
 ### Frontend (React)
 
-cd frontend
+cd .\internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288\Domaci2\fitness-frontend\
 
 # Instalacija dependencija
 npm install
@@ -53,7 +47,7 @@ npm install
 # Pokretanje u dev režimu
 npm run dev
 
-Frontend se pokreće na http://localhost:5173
+Frontend se pokreće na **http://localhost:5173**
 
 ### Opis funkcionalnosti
 
@@ -95,7 +89,7 @@ upravlja ciljevima (Goals)
 
 vidi i uređuje sve treninge
 
-🧠 Tehnologije
+### Tehnologije
 Backend
 
 Laravel 11 (PHP)
@@ -114,4 +108,4 @@ React Router DOM
 
 Context API za autentifikaciju
 
-Tailwind CSS + custom UI komponente
+Tailwind CSS
