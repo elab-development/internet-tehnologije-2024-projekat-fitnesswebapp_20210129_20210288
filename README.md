@@ -7,7 +7,7 @@ Napravljen je kao kombinacija **Laravel** (backend API) i **React** (frontend) t
 
 ## Pokretanje projekta na lokalnoj mašini
 
-### Backend (Laravel API)
+### (1) Backend (Laravel API)
 
 #### Zahtevi
 - PHP ≥ 8.2  
@@ -15,6 +15,7 @@ Napravljen je kao kombinacija **Laravel** (backend API) i **React** (frontend) t
 - MySQL / MariaDB  
 
 #### Instalacija i pokretanje
+
 ```bash
 cd .\internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288\Domaci1\fitness-web-app\
 
@@ -28,16 +29,26 @@ cp .env.example .env
 php artisan key:generate
 
 # Podesi bazu u .env (DB_DATABASE, DB_USERNAME, DB_PASSWORD)!
-# pa pokreni migracije:
+# Pokreni migracije i seedere:
 php artisan migrate --seed
-
-# Pokreni server
-php artisan serve
 ```
+### Pokretanje factory-a i dodatnih seeding podataka (opciono):
 
-Server se pokreće na **http://127.0.0.1:8000**
+# Ako želiš da ponovo napuniš bazu test podacima:
+php artisan migrate:fresh --seed
 
-### Frontend (React)
+Seeder automatski kreira:
+
+- jednog admin korisnika
+- jednog member korisnika
+- nekoliko test treninga i vežbi (povezanih sa njima)
+
+Nakon toga pokreni server:
+php artisan serve
+
+**Server se pokreće na http://127.0.0.1:8000**
+
+### (2) Frontend (React)
 
 cd .\internet-tehnologije-2024-projekat-fitnesswebapp_20210129_20210288\Domaci2\fitness-frontend\
 
@@ -47,7 +58,7 @@ npm install
 # Pokretanje u dev režimu
 npm run dev
 
-Frontend se pokreće na **http://localhost:5173**
+**Frontend se pokreće na http://localhost:5173**
 
 ### Opis funkcionalnosti
 
@@ -55,42 +66,42 @@ Aplikacija omogućava upravljanje korisnicima, treninzima i vežbama, sa različ
 
 1. Gost (guest)
 
-može da se uloguje kao gost (bez registracije)
+Može da se uloguje kao gost (bez registracije)
 
-vidi sve javne treninge (/workouts)
+Vidi sve javne treninge (/workouts)
 
-vidi detalje treninga, ali ne može da ih menja ili briše
+Vidi detalje treninga, ali ne može da ih menja ili briše
 
 2. Član (member)
 
-može da kreira nalog i loguje se
+Može da kreira nalog i loguje se
 
-može da:
+Može da:
 
-kreira svoje treninge
+Kreira svoje treninge
 
-uređuje i briše sopstvene treninge
+Uređuje i briše sopstvene treninge
 
-dodaje vežbe u okviru treninga
+Dodaje vežbe u okviru svojih treninga
 
-filtrira sopstvene treninge i vežbe
+Filtrira treninge i vežbe po tipu i ključnim rečima
 
-vidi i javne treninge (read-only)
+Vidi i javne treninge (read-only)
 
 3. Administrator (admin)
 
-ima sve funkcionalnosti člana
+Ima sve funkcionalnosti člana
 
-dodatno može:
+Dodatno može:
 
-da vidi i briše bilo kog korisnika
+Da vidi i briše bilo kog korisnika
 
-upravlja ciljevima (Goals)
+Upravljа ciljevima (Goals)
 
-vidi i uređuje sve treninge
+Vidi i uređuje sve treninge
 
 ### Tehnologije
-Backend
+(1) - Backend
 
 Laravel 11 (PHP)
 
@@ -100,7 +111,7 @@ Eloquent ORM
 
 MySQL
 
-Frontend
+(2) - Frontend
 
 React + Vite
 
