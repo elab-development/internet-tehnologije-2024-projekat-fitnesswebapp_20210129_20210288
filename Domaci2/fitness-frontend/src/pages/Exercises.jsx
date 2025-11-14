@@ -1,4 +1,4 @@
-// Lista vežbi sa filtriranjem, sortiranjem i paginacijom (sve na front-endu).
+// Lista vežbi — sada koristi backend paginaciju i filtriranje (ali UI ostaje isti).
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -42,93 +42,65 @@ export default function Exercises() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
+  // FILTRI (ista UI logika — samo backend sada filtrira)
   const [typeFilter, setTypeFilter] = useState("");
   const [query, setQuery] = useState("");
   const [showMineOnly, setShowMineOnly] = useState(false);
 
+  // SORT (isto kao pre)
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
 
+  // PAGINACIJA (ali sada backend vraća total + last_page)
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
+  // DELETE modal
   const [confirmId, setConfirmId] = useState(null);
   const [busyId, setBusyId] = useState(null);
 
+  // BACKEND LOAD
   const load = useCallback(async () => {
     try {
       setErr("");
       setLoading(true);
-      const list = await fetchExercises({});
-      setItems(Array.isArray(list) ? list : (list?.data ?? []));
-      setPage(1);
+
+      const res = await fetchExercises({
+        page,
+        per_page: pageSize,
+        search: query.trim() || undefined,
+        type: typeFilter || undefined,
+        mine: showMineOnly ? 1 : 0,
+        sort: sortBy,
+        dir: sortDir,
+      });
+
+      // Laravel paginator
+      setItems(res.data ?? []);
+      setTotal(res.total ?? 0);
+      setTotalPages(res.last_page ?? 1);
     } catch {
       setErr("Ne mogu da učitam vežbe.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize, query, typeFilter, showMineOnly, sortBy, sortDir]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+  }, [load]);
 
-  // Filtriranje (uključuje "Samo moji" sa fallback-ovima)
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-
-    return items.filter((ex) => {
-      const ownerId =
-        ex?.workout?.user_id ?? ex?.workout_user_id ?? ex?.user_id ?? null;
-
-      if (showMineOnly && ownerId !== user?.id) return false;
-
-      const okType = !typeFilter || String(ex.type).toLowerCase() === typeFilter;
-      const okQuery =
-        !q ||
-        String(ex.name ?? "").toLowerCase().includes(q) ||
-        String(ex.description ?? "").toLowerCase().includes(q);
-
-      return okType && okQuery;
-    });
-  }, [items, typeFilter, query, showMineOnly, user?.id]);
-
-  // Sortiranje
-  const sorted = useMemo(() => {
-    const arr = [...filtered];
-    arr.sort((a, b) => {
-      const av = a?.[sortBy];
-      const bv = b?.[sortBy];
-
-      const isNum = sortBy === "id" || sortBy === "reps_or_time";
-      let cmp;
-      if (isNum) {
-        const na = Number(av ?? 0);
-        const nb = Number(bv ?? 0);
-        cmp = na === nb ? 0 : na < nb ? -1 : 1;
-      } else {
-        const sa = String(av ?? "").toLowerCase();
-        const sb = String(bv ?? "").toLowerCase();
-        cmp = sa === sb ? 0 : sa < sb ? -1 : 1;
-      }
-      return sortDir === "asc" ? cmp : -cmp;
-    });
-    return arr;
-  }, [filtered, sortBy, sortDir]);
-
-  // Paginacija
-  const total = sorted.length;
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const safePage = Math.min(page, totalPages);
-  const start = (safePage - 1) * pageSize;
-  const end = start + pageSize;
-  const paged = sorted.slice(start, end);
-
+  // DELETE handler
   const doDelete = async () => {
     if (!confirmId) return;
     try {
       setBusyId(confirmId);
       await deleteExercise(confirmId);
-      setItems((prev) => prev.filter((x) => String(x.id) !== String(confirmId)));
       setConfirmId(null);
+      load(); // ponovo učitaj
     } catch {
       alert("Brisanje nije uspelo.");
     } finally {
@@ -138,7 +110,15 @@ export default function Exercises() {
 
   return (
     <div className="container section">
-      <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          alignItems: "center",
+          marginBottom: 12,
+          flexWrap: "wrap",
+        }}
+      >
         <h2 style={{ margin: 0 }}>Exercises</h2>
 
         {(role === "member" || role === "admin") && (
@@ -147,12 +127,24 @@ export default function Exercises() {
 
         <Button variant="outline" onClick={load}>Osveži</Button>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginLeft: "auto" }}>
+        {/* FILTERI — UI NE MENJAMO */}
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            flexWrap: "wrap",
+            marginLeft: "auto",
+          }}
+        >
           <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <input
               type="checkbox"
               checked={showMineOnly}
-              onChange={(e) => { setShowMineOnly(e.target.checked); setPage(1); }}
+              onChange={(e) => {
+                setShowMineOnly(e.target.checked);
+                setPage(1);
+              }}
             />
             Samo moji
           </label>
@@ -160,7 +152,10 @@ export default function Exercises() {
           <SelectInput
             label="Tip"
             value={typeFilter}
-            onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setTypeFilter(e.target.value);
+              setPage(1);
+            }}
             options={TYPE_OPTIONS}
             style={{ minWidth: 160 }}
           />
@@ -168,7 +163,10 @@ export default function Exercises() {
           <TextInput
             label="Pretraga"
             value={query}
-            onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setPage(1);
+            }}
             placeholder="ime ili opis…"
           />
 
@@ -191,7 +189,10 @@ export default function Exercises() {
           <SelectInput
             label="Po strani"
             value={String(pageSize)}
-            onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
             options={PAGE_SIZE_OPTIONS}
             style={{ minWidth: 110 }}
           />
@@ -218,8 +219,8 @@ export default function Exercises() {
 
       {!loading && !err && (
         <Card>
-          {!paged.length ? (
-            <p style={{ margin: 0, opacity: .85 }}>Nema vežbi za prikaz.</p>
+          {!items.length ? (
+            <p style={{ margin: 0, opacity: 0.85 }}>Nema vežbi za prikaz.</p>
           ) : (
             <>
               <div style={{ overflowX: "auto" }}>
@@ -232,17 +233,25 @@ export default function Exercises() {
                       <th style={{ textAlign: "left", padding: 8 }}>Ponavljanja/Vreme</th>
                       <th style={{ textAlign: "left", padding: 8 }}>Tip</th>
                       <th style={{ textAlign: "left", padding: 8 }}>Workout</th>
+
                       {(role === "member" || role === "admin") && (
                         <th style={{ textAlign: "left", padding: 8 }}>Akcije</th>
                       )}
                     </tr>
                   </thead>
+
                   <tbody>
-                    {paged.map((ex) => (
+                    {items.map((ex) => (
                       <tr key={ex.id} style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
                         <td style={{ padding: 8 }}>{ex.id}</td>
                         <td style={{ padding: 8 }}>{ex.name ?? "-"}</td>
-                        <td style={{ padding: 8, maxWidth: 360, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <td style={{
+                          padding: 8,
+                          maxWidth: 360,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}>
                           {ex.description ?? "-"}
                         </td>
                         <td style={{ padding: 8 }}>{ex.reps_or_time ?? "-"}</td>
@@ -251,7 +260,10 @@ export default function Exercises() {
 
                         {(role === "member" || role === "admin") && (
                           <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
-                            <Link className="btn btn-outline" to={`/exercises/${ex.id}/edit`}>Uredi</Link>
+                            <Link className="btn btn-outline" to={`/exercises/${ex.id}/edit`}>
+                              Uredi
+                            </Link>
+
                             <Button
                               variant="ghost"
                               disabled={busyId === ex.id}
@@ -267,21 +279,32 @@ export default function Exercises() {
                 </table>
               </div>
 
-              <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", alignItems: "center", marginTop: 10 }}>
+              {/* PAGINACIJA – backend-driven */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 6,
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  marginTop: 10,
+                }}
+              >
                 <Button
                   variant="outline"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={safePage === 1}
+                  disabled={page === 1}
                 >
                   Prethodna
                 </Button>
+
                 <span style={{ opacity: 0.8 }}>
-                  Strana {safePage} / {totalPages}
+                  Strana {page} / {totalPages}
                 </span>
+
                 <Button
                   variant="outline"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={safePage === totalPages}
+                  disabled={page === totalPages}
                 >
                   Sledeća
                 </Button>
@@ -291,15 +314,26 @@ export default function Exercises() {
         </Card>
       )}
 
+      {/* DELETE modal */}
       <Modal
         open={!!confirmId}
         title="Potvrda brisanja vežbe"
         onClose={() => setConfirmId(null)}
       >
         <p>Da li sigurno želiš da obrišeš ovu vežbu?</p>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
-          <button className="btn btn-outline" onClick={() => setConfirmId(null)}>Ne</button>
-          <button className="btn" onClick={doDelete}>Da, obriši</button>
+
+        <div style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: 10,
+          marginTop: 12
+        }}>
+          <button className="btn btn-outline" onClick={() => setConfirmId(null)}>
+            Ne
+          </button>
+          <button className="btn" onClick={doDelete}>
+            Da, obriši
+          </button>
         </div>
       </Modal>
     </div>

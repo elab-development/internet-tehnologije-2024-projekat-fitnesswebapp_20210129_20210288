@@ -1,10 +1,11 @@
 // API pozivi za exercises CRUD
 import { api } from "./client";
 
-// Vrati listu svih vežbi
-export async function fetchExercises() {
-  const { data } = await api.get("/exercises");
-  return Array.isArray(data) ? data : (data?.data || []);
+// Vrati listu vežbi sa paginacijom i filtriranjem sa backenda
+export async function fetchExercises(params = {}) {
+  const { data } = await api.get("/exercises", { params });
+  // Laravel paginate objekat (current_page, data, total, last_page, per_page...)
+  return data;
 }
 
 // Vrati jednu vežbu po ID

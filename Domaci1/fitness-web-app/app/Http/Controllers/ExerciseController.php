@@ -3,15 +3,60 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Exercise;
 
 class ExerciseController extends Controller
 {
-    // Vraća sve vežbe zajedno sa osnovnim podacima o pripadajućem workout-u
-    public function index()
+    // Vraća vežbe sa paginacijom, filtriranjem i sortiranjem
+    public function index(Request $request)
     {
-        $exercises = Exercise::with(['workout:id,user_id,name'])->get();
-        return response()->json($exercises, 200);
+        $query = Exercise::with(['workout:id,user_id,name']);
+
+        // Filtriranje po tipu (type=cardio/strength/flexibility)
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Pretraga po nazivu/opisu 
+        if ($request->filled('search')) {
+            $text = mb_strtolower($request->search, 'UTF-8');
+            $query->where(function ($q) use ($text) {
+                $q->whereRaw('LOWER(name) LIKE ?', ["%{$text}%"])
+                  ->orWhereRaw('LOWER(description) LIKE ?', ["%{$text}%"]);
+            });
+        }
+
+        // Samo moje vežbe (mine=1) – filtrira po vlasniku workout-a
+        if ($request->boolean('mine')) {
+            $userId = Auth::id();
+            if ($userId) {
+                $query->whereHas('workout', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                });
+            }
+        }
+
+        // Sortiranje: sort=name|type|reps_or_time|id, dir=asc|desc
+        $sort = $request->get('sort', 'name');
+        $dir  = $request->get('dir', 'asc');
+
+        $allowedSorts = ['id', 'name', 'type', 'reps_or_time'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'name';
+        }
+
+        $query->orderBy($sort, $dir === 'desc' ? 'desc' : 'asc');
+
+        // Paginate
+        $perPage = (int) $request->get('per_page', 10);
+        if ($perPage <= 0) {
+            $perPage = 10;
+        }
+
+        $paginator = $query->paginate($perPage)->appends($request->query());
+
+        return response()->json($paginator, 200);
     }
 
     // Kreira novu vežbu

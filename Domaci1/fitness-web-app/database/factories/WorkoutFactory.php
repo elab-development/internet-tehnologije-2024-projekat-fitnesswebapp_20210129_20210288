@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Workout;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Workout>
@@ -18,7 +19,10 @@ class WorkoutFactory extends Factory
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'duration' => $this->faker->numberBetween(10, 120),
-            'user_id' => 1,
+            'user_id' => 1, 
+
+            'user_id' => User::factory(),
+
             'calories_burned' => $this->faker->numberBetween(50, 500),
         ];
     }

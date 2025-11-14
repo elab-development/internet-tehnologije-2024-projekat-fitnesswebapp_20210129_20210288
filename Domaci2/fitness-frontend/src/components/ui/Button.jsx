@@ -2,7 +2,7 @@
 export default function Button({
   children,
   variant = "primary",   // primary | outline | ghost
-  small = false,         // ako je u navbaru, možeš staviti small
+  small = false,         // true | false
   loading = false,
   className = "",
   ...rest
