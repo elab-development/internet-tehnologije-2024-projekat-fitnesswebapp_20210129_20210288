@@ -48,7 +48,7 @@ class ExerciseController extends Controller
 
         $query->orderBy($sort, $dir === 'desc' ? 'desc' : 'asc');
 
-        // Paginate
+        // Paginacija
         $perPage = (int) $request->get('per_page', 10);
         if ($perPage <= 0) {
             $perPage = 10;
@@ -95,6 +95,7 @@ class ExerciseController extends Controller
     public function update(Request $request, $id)
     {
         $exercise = Exercise::find($id);
+        
         if (!$exercise) {
             return response()->json(['message' => 'Exercise not found.'], 404);
         }

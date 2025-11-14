@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za kreiranje tabele 'users' u bazi podataka
 return new class extends Migration
 {
     /**

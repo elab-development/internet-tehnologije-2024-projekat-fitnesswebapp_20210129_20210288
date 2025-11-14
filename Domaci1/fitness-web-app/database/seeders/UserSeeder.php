@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 
+// Seeder za kreiranje korisnika sa različitim ulogama i nivoima fitnesa
 class UserSeeder extends Seeder
 {
     public function run()

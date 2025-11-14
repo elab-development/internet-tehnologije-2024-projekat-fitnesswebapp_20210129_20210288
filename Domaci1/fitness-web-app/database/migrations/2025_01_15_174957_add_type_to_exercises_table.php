@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za dodavanje kolone 'type' u tabelu 'exercises'
 return new class extends Migration
 {
     

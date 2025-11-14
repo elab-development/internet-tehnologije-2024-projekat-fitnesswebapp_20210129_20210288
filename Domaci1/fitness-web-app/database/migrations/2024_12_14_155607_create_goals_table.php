@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Ova klasa predstavlja migraciju za kreiranje tabele 'goals' u bazi podataka
+// Migracija za kreiranje tabele 'goals' koja čuva ciljeve korisnika
 return new class extends Migration
 {
     /**

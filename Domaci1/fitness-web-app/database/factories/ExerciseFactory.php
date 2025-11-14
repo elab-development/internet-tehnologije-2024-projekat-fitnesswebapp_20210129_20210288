@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Exercise;
 use App\Models\Workout;
 
+// Factory za kreiranje lažnih podataka o vežbama
 class ExerciseFactory extends Factory
 {
     protected $model = Exercise::class;
@@ -13,10 +14,10 @@ class ExerciseFactory extends Factory
     public function definition()
     {
         return [
-            'workout_id' => Workout::factory(), // Povezuje sa random Workout
+            'workout_id' => Workout::factory(),
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
-            'reps_or_time' => $this->faker->numberBetween(5, 60), // Zamenjeno sa reps_or_time
+            'reps_or_time' => $this->faker->numberBetween(5, 60), 
             'type' => $this->faker->randomElement(['cardio', 'strength', 'flexibility']),
         ];
     }

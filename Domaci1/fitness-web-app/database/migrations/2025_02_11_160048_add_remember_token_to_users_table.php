@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za dodavanje kolone 'email_verified_at' u tabelu 'users'
 return new class extends Migration {
     /**
      * Pokreće migraciju - dodaje kolonu 'remember_token' u tabelu 'users'.

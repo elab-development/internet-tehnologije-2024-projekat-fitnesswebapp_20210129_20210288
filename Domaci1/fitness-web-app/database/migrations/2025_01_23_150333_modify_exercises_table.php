@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za modifikaciju tabele 'exercises' – preimenovanje kolone i brisanje kolone
 return new class extends Migration
 {
     /**

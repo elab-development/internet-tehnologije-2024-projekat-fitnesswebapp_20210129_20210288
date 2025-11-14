@@ -7,6 +7,7 @@ use App\Models\Goal;
 
 class GoalController extends Controller
 {
+    // Kreira novi cilj
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -22,11 +23,13 @@ class GoalController extends Controller
         return response()->json(['status' => 'success', 'data' => $goal], 201);
     }
 
+    // Vraća sve ciljeve
     public function index()
     {
         return response()->json(Goal::all(), 200);
     }
 
+    // Vraća jedan cilj po ID-ju
     public function show($id)
     {
         $goal = Goal::find($id);
@@ -36,6 +39,7 @@ class GoalController extends Controller
         return response()->json($goal);
     }
 
+    // Ažurira cilj po ID-ju
     public function update(Request $request, $id)
     {
         $goal = Goal::find($id);
@@ -57,6 +61,7 @@ class GoalController extends Controller
         return response()->json($goal);
     }
 
+    // Briše cilj po ID-ju
     public function destroy($id)
     {
         $goal = Goal::find($id);

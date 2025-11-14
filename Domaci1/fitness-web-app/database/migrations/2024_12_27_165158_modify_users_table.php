@@ -6,11 +6,10 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za modifikaciju tabele 'users' – uklanjanje nepotrebnih kolona
 class ModifyUsersTable extends Migration
 {
-    /**
-     * Pokreće migraciju – uklanja određene kolone iz tabele 'users'.
-     */
+    
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
@@ -22,13 +21,10 @@ class ModifyUsersTable extends Migration
         });
     }
 
-    /**
-     * Poništava migraciju – ponovo dodaje obrisane kolone.
-     */
+   
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Vraćamo prethodno obrisane kolone u slučaju rollback-a
             $table->timestamp('email_verified_at')->nullable(); // Ponovo dodajemo vreme verifikacije e-maila
             $table->string('remember_token')->nullable(); // Ponovo dodajemo token za „zapamti me“
         });

@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
+// Factory za kreiranje lažnih podataka o korisnicima
 class UserFactory extends Factory
 {
     protected $model = User::class;

@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+// Migracija za dodavanje kolone 'user_id' u tabelu 'workouts' i postavljanje spoljnog ključa
 return new class extends Migration
 {
     /**

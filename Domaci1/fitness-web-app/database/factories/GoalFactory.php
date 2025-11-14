@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Goal;
 use App\Models\User;
 
+// Factory za kreiranje lažnih podataka o ciljevima korisnika
 class GoalFactory extends Factory
 {
     protected $model = Goal::class;

@@ -19,8 +19,8 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 
 // --- WORKOUTS: dostupno SVIM ulogovanim korisnicima (guest, member, admin)
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/workouts', [WorkoutController::class, 'index']);    
-    Route::get('/workouts/{id}', [WorkoutController::class, 'show']); 
+    Route::get('/workouts', [WorkoutController::class, 'index']);
+    Route::get('/workouts/{id}', [WorkoutController::class, 'show']);
 });
 
 // --- MEMBER (i admin)

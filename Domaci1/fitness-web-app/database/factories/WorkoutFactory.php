@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Workout;
 use App\Models\User;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Workout>
- */
+// Factory za kreiranje lažnih podataka o treninzima
 class WorkoutFactory extends Factory
 {
     protected $model = Workout::class;

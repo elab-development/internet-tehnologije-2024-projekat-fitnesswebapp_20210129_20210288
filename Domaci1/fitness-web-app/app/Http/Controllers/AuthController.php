@@ -25,7 +25,7 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
-        // Kreiranje korisnika + server-side popunjavanje verifikacije i remember tokena
+        // Kreiranje korisnika u bazi podataka
         $user = User::create([
             'name'              => $request->name,
             'email'             => $request->email,
@@ -36,6 +36,7 @@ class AuthController extends Controller
             'remember_token'    => Str::random(60),  
         ]);
 
+        // Provera da li je metoda createToken dostupna
         if (!method_exists($user, 'createToken')) {
             return response()->json(['error' => 'Sanctum nije ispravno konfigurisan.'], 500);
         }
@@ -81,6 +82,7 @@ class AuthController extends Controller
     // Prijava kao gost korisnik
     public function loginAsGuest(Request $request)
     {
+        // Predefinisani podaci za gosta
         $name    = $request->input('name', 'Guest ' . Str::upper(Str::random(4)));
         $fitness = $request->input('fitness_level', 'beginner');
         $email   = 'guest_' . Str::uuid() . '@example.test';

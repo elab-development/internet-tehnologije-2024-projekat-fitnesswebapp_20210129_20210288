@@ -6,13 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Pokreće migraciju – menja dužinu kolone 'name' na 150 karaktera.
-     */
+   
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('name', 150) // Smanjujemo maksimalan broj karaktera sa 255 na 150
+            $table->string('name', 150) 
                   ->change(); // Menjamo kolonu 'name' u tabeli 'users'
         });
     }

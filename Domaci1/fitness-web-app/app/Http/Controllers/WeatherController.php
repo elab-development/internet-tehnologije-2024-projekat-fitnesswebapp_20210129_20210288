@@ -7,9 +7,7 @@ use GuzzleHttp\Client;
 
 class WeatherController extends Controller
 {
-    /**
-     * Metoda koja dohvaća vremensku prognozu za određeni grad koristeći OpenWeatherMap API.
-     */
+    // Dohvata vremenske uslove za dati grad preko OpenWeatherMap API-ja
     public function getWeather($city)
     {
         // Dohvatanje API ključa iz konfiguracionih fajlova

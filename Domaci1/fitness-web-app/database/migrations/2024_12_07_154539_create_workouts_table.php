@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-// Ova klasa predstavlja migraciju za kreiranje tabele 'workouts' u bazi podataka
+// Migracija za kreiranje tabele 'workouts'
 return new class extends Migration
 {
     /**
