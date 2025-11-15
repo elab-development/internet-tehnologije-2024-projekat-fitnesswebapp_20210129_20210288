@@ -19,39 +19,29 @@ function pickTitle(goal) {
   return goal?.title ?? goal?.name ?? goal?.goal ?? "(bez naziva)";
 }
 
-/**
- * Vraća opis cilja ili "/" ako nije zadat.
- */
+// Vraća opis cilja. Ako nema opisa, vraća "/".
 function pickDescription(goal) {
   return goal?.description ?? "/";
 }
 
-/**
- * Vraća rok (datum) cilja. Ako ga nema, vraća null.
- */
+// Vraća rok cilja (target_date, due_date, deadline, ...)
 function pickDate(goal) {
   return goal?.target_date ?? goal?.due_date ?? goal?.deadline ?? goal?.targetDate ?? null;
 }
 
-/**
- * Vraća ime korisnika (ili ID) kome cilj pripada.
- */
+// Vraća ime korisnika (ili ID) kome cilj pripada.
 function pickUser(goal) {
   return goal?.user?.name ?? goal?.user_name ?? goal?.userId ?? goal?.user_id ?? "-";
 }
 
-/**
- * Vraća status cilja.
- */
+// Vraća status cilja.
 function pickStatus(goal) {
   return goal?.status ?? "-";
 }
 
 // Tabela ciljeva
 
-/**
- * Red u tabeli sa jednim ciljem i akcijama.
- */
+// Red u tabeli sa jednim ciljem i akcijama.
 function GoalsRow({ goal, onAskDelete, busyId }) {
   const id = goal?.id;
   const isBusy = String(busyId) === String(id);
@@ -74,7 +64,7 @@ function GoalsRow({ goal, onAskDelete, busyId }) {
       </td>
       <td style={{ padding: 8 }}>{pickUser(goal)}</td>
       <td style={{ padding: 8 }}>{pickDate(goal) ?? "-"}</td>
-      {/* NOVO: status kolona */}
+
       <td style={{ padding: 8 }}>{pickStatus(goal)}</td>
 
       <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -94,9 +84,7 @@ function GoalsRow({ goal, onAskDelete, busyId }) {
   );
 }
 
-/**
- * Tabela ciljeva.
- */
+// Tabela sa listom ciljeva
 function GoalsTable({ goals, onAskDelete, busyId }) {
   return (
     <div style={{ overflowX: "auto" }}>
@@ -166,9 +154,7 @@ export default function AdminGoals() {
     loadGoals();
   }, [loadGoals]);
 
-  /**
-   * Potvrđeno brisanje cilja.
-   */
+  // Handleri za brisanje cilja
   const handleConfirmDelete = async () => {
     // nema šta da briše
     if (!confirmId) return;
@@ -252,7 +238,7 @@ export default function AdminGoals() {
         )}
       </Card>
 
-      {/* Modal: Potvrda brisanja - REUSABLE KOMPONENTA*/}
+      {/* Modal: Potvrda brisanja*/}
       <Modal
         open={!!confirmId}
         title="Potvrda brisanja cilja"

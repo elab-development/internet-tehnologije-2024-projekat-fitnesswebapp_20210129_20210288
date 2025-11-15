@@ -1,4 +1,5 @@
-// Jednostavna kartica – koristi .card iz index.css
+// src/components/ui/Card.jsx
+
 export default function Card({ title, children, style, className = "" }) {
     return (
         <div className={`card${className ? " " + className : ""}`} style={style}>

@@ -56,6 +56,7 @@ export default function CreateWorkout() {
     return { durationParsed: d, caloriesParsed: c, formError: "" };
   }, [name, duration, calories]);
 
+  // Submit handler
   const submit = async (e) => {
     e.preventDefault();
     setErr("");

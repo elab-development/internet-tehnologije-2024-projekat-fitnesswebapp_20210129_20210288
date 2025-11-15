@@ -63,7 +63,7 @@ export default function AdminUsers() {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
 
-  // ======== EKSPORT FUNKCIJE (CSV i TXT) ========
+  // Eksport funkcije
 
   const exportToCSV = () => {
     if (!items.length) {

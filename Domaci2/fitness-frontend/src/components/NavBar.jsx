@@ -61,7 +61,7 @@ export default function NavBar() {
               to="/admin/users"
               className={({ isActive }) => "nav-link" + (isActive ? " is-active" : "")}
             >
-              Admin · Users
+              Admin - Users
             </NavLink>
           )}
         </nav>

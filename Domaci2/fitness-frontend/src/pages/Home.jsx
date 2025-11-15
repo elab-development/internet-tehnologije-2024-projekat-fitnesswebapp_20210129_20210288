@@ -10,10 +10,10 @@ import logo from "../assets/logo.png";
 export default function Home() {
   const { user } = useAuth();
 
-  // Welcome modal (namerno uvek pri ulasku)
+  // Welcome modal (Uvek pri učitavanju stranice)
   const [showWelcome, setShowWelcome] = useState(true);
 
-  // Kontakt forma (demo)
+  // Kontakt forma (demo - nema backend)
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");

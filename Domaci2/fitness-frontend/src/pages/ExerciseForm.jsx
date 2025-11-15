@@ -50,14 +50,14 @@ export default function ExerciseForm() {
         const arr = Array.isArray(list) ? list : (list?.data ?? []);
         setWorkouts(arr);
       } catch {
-        setWorkouts([]); // dozvoli ručni unos ako nema liste
+        setWorkouts([]); 
       } finally {
         setLoadingWorkouts(false);
       }
     })();
   }, []);
 
-  // ako je edit i nemamo state, dohvati detalj
+  // učitaj vežbu ako je edit i nemamo inicijalnu
   useEffect(() => {
     if (!isEdit || initial) return;
     let active = true;
@@ -99,7 +99,7 @@ export default function ExerciseForm() {
       name: name.trim(),
       description: description.trim() || null,
       reps_or_time: Number(repsOrTime),
-      type, // vrednost iz dropdown-a
+      type, 
       workout_id: Number(workoutId),
     };
 
@@ -161,7 +161,7 @@ export default function ExerciseForm() {
 
             <div className="field">
               <label>Workout *</label>
-              {/* dropdown sa sopstvenim workoutima; postoji i ručni unos kao fallback */}
+              {/* Ručni unos za svaki slučaj */}
               <select
                 value={String(workoutId)}
                 onChange={(e) => setWorkoutId(e.target.value)}

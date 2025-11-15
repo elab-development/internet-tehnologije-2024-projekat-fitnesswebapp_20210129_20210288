@@ -104,12 +104,12 @@ export default function AdminGoalForm() {
     // Normalizuj vrednost datuma – prosledi string kakav dobijamo iz <input type="date">
     const dateStr = targetDate && String(targetDate).trim() ? String(targetDate).trim() : null;
 
-    // Šaljemo SVE najčešće varijante; backend će “pokupiti” onu koju očekuje
+    // Šaljemo na backend u snake_case i camelCase formatu
     const payload = {
       title: title.trim(),
       description: description.trim(),
       user_id: Number(userId),
-      status, // <<< NOVO: status ide na backend
+      status,
 
       // snake_case
       target_date: dateStr,
@@ -122,6 +122,7 @@ export default function AdminGoalForm() {
       dueDate: dateStr,
     };
 
+    // Pošalji zahtev
     try {
       setLoading(true);
       if (isEdit) await updateGoal(id, payload);

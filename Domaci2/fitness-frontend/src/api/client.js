@@ -6,6 +6,7 @@ export const api = axios.create({
   headers: { Accept: "application/json" },
 });
 
+// Funkcija za postavljanje ili uklanjanje tokena za autentifikaciju
 export function setAuthToken(token) {
   if (token) {
     api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -16,6 +17,7 @@ export function setAuthToken(token) {
   }
 }
 
+// Proveri da li postoji sačuvan token pri pokretanju aplikacije
 const saved = localStorage.getItem("token");
 if (saved) setAuthToken(saved);
 

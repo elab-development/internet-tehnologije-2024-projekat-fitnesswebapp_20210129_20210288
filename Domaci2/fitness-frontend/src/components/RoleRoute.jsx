@@ -2,9 +2,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-/**
- * Ako korisnik nema rolu iz 'allowed', vraća na početnu.
- */
+// Zaštićena ruta koja dozvoljava pristup samo korisnicima sa određenim rolama
 export default function RoleRoute({ allowed = [], children }) {
   const { user } = useAuth();
 

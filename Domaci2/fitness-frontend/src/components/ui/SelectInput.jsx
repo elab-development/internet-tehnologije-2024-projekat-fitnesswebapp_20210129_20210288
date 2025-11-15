@@ -1,3 +1,4 @@
+// src/components/ui/SelectInput.jsx
 // Jednostavan <select> sa label-om, za role itd.
 export default function SelectInput({ label, options = [], className = "", ...rest }) {
   return (

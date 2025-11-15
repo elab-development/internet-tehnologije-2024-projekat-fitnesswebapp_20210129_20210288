@@ -71,7 +71,7 @@ export default function EditWorkout() {
     return { durationParsed: d, caloriesParsed: c, formError: "" };
   }, [name, duration, calories]);
 
-  // submit
+  // Submit handler
   const submit = async (e) => {
     e.preventDefault();
     setErr("");
@@ -110,7 +110,7 @@ export default function EditWorkout() {
     <div className="container section" style={{ maxWidth: 720 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
         <h2 style={{ marginTop: 0, marginBottom: 14 }}>Izmeni trening</h2>
-        <Link className="btn btn-outline" to="/workouts">← Nazad</Link>
+        <Link className="btn btn-outline" to="/workouts">Nazad</Link>
       </div>
 
       <Card>

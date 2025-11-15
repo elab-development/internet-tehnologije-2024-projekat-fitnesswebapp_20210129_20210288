@@ -10,6 +10,7 @@ import SelectInput from "../components/ui/SelectInput";
 import { fetchExercises, deleteExercise } from "../api/exercises";
 import { useAuth } from "../context/AuthContext";
 
+// Opcije za filtere i sortiranje
 const TYPE_OPTIONS = [
   { value: "", label: "— svi tipovi —" },
   { value: "cardio", label: "cardio" },
@@ -17,6 +18,7 @@ const TYPE_OPTIONS = [
   { value: "flexibility", label: "flexibility" },
 ];
 
+// Opcije za sortiranje
 const SORT_BY_OPTIONS = [
   { value: "name", label: "naziv" },
   { value: "type", label: "tip" },
@@ -24,16 +26,19 @@ const SORT_BY_OPTIONS = [
   { value: "id", label: "ID" },
 ];
 
+// Opcije za broj po strani
 const PAGE_SIZE_OPTIONS = [
   { value: 5, label: "5" },
   { value: 10, label: "10" },
   { value: 20, label: "20" },
 ];
 
+// Vraća ime workouta ili njegov ID ako nema imena
 function pickWorkoutName(ex) {
   return ex?.workout?.name ?? (ex?.workout_id != null ? `#${ex.workout_id}` : "-");
 }
 
+// Glavna komponenta
 export default function Exercises() {
   const { user } = useAuth();
   const role = user?.role;
@@ -42,16 +47,16 @@ export default function Exercises() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // FILTRI (ista UI logika — samo backend sada filtrira)
+  // FILTERI
   const [typeFilter, setTypeFilter] = useState("");
   const [query, setQuery] = useState("");
   const [showMineOnly, setShowMineOnly] = useState(false);
 
-  // SORT (isto kao pre)
+  // SORT 
   const [sortBy, setSortBy] = useState("name");
   const [sortDir, setSortDir] = useState("asc");
 
-  // PAGINACIJA (ali sada backend vraća total + last_page)
+  // PAGINACIJA - backend vraća totalPages
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -127,7 +132,6 @@ export default function Exercises() {
 
         <Button variant="outline" onClick={load}>Osveži</Button>
 
-        {/* FILTERI — UI NE MENJAMO */}
         <div
           style={{
             display: "flex",
@@ -279,7 +283,7 @@ export default function Exercises() {
                 </table>
               </div>
 
-              {/* PAGINACIJA – backend-driven */}
+              {/* PAGINACIJA - backend vraća totalPages */}
               <div
                 style={{
                   display: "flex",

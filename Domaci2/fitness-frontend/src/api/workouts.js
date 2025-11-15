@@ -1,5 +1,4 @@
 // src/api/workouts.js
-// API helperi za sve workout rute, usklađeni sa Laravel backendom (api.php)
 
 import { api } from "./client";
 

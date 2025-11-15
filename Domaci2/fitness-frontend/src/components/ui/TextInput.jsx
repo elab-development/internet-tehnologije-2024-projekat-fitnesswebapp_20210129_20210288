@@ -1,5 +1,5 @@
+// src/components/ui/TextInput.jsx
 // Jedinstveno polje za unos (label + input + helper/error)
-// – radi sa .field stilom iz index.css
 export default function TextInput({
   label,
   error,

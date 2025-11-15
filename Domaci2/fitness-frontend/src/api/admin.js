@@ -7,7 +7,7 @@ export async function fetchUsers() {
   return Array.isArray(data) ? data : (data.data || []);
 }
 
-/** FILTRIRANJE na frontu (ne postoji ruta /admin/users/{id} ) */
+// ** Vrati korisnika po id (admin only) */
 export async function fetchUserById(id) {
    // Preuzmi listu svih korisnika
   const users = await fetchUsers();

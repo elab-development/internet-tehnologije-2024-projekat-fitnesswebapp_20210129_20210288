@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { getWeather } from "../api/weather";
 
+// Jednostavan vidžet za prikaz vremenske prognoze za dati grad
 export default function WeatherWidget() {
   const [city, setCity] = useState("Belgrade");
   const [w, setW] = useState(null);

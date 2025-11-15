@@ -22,7 +22,7 @@ export default function PublicWorkouts() {
     try {
       setErr("");
       setLoading(true);
-      const list = await fetchWorkouts(); // GET /workouts
+      const list = await fetchWorkouts();
       setItems(Array.isArray(list) ? list : (list?.data ?? []));
     } catch {
       setErr("Ne mogu da učitam treninge.");
@@ -37,7 +37,7 @@ export default function PublicWorkouts() {
     if (!confirmId) return;
     try {
       setBusyId(confirmId);
-      await deleteWorkout(confirmId); // DELETE /users/workouts/:id
+      await deleteWorkout(confirmId);
       setItems(prev => prev.filter(x => String(x.id) !== String(confirmId)));
       setConfirmId(null);
     } catch {

@@ -1,6 +1,4 @@
 // src/pages/AdminUserDetails.jsx
-// Admin: detalji korisnika (read-only).
-// Backend nema GET /admin/users/:id pa radimo fetchUsers() i filtriramo.
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
@@ -13,16 +11,17 @@ export default function AdminUserDetail() {
   const nav = useNavigate();
   const location = useLocation();
 
-  // ako si došao sa liste, imamo user-a u state-u
+
   const initialUser = location.state?.user || null;
 
   const [user, setUser] = useState(initialUser);
   const [loading, setLoading] = useState(!initialUser);
   const [err, setErr] = useState("");
 
+  // učitaj korisnika ako nemamo inicijalnog
   useEffect(() => {
     let active = true;
-    if (initialUser) return; // već imamo podatke
+    if (initialUser) return;
 
     (async () => {
       try {

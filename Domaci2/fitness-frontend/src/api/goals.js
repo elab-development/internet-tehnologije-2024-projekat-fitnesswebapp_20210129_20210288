@@ -4,7 +4,7 @@
 
 import { api } from "./client";
 
-/** Osiguraj da je datum u "YYYY-MM-DD" i dupliraj ga na sva konvencionalna polja. */
+// Normalizacija payload-a cilja (goal) pre slanja na backend
 function normalizeGoalPayload(payload = {}) {
   // pokupi datum ako je već pod nekim ključem
   const raw =
@@ -15,12 +15,11 @@ function normalizeGoalPayload(payload = {}) {
     payload.dueDate ??
     null;
 
-  // input type="date" nam već daje "YYYY-MM-DD", ali ipak ponudimo fallback
+  // formatiraj na YYYY-MM-DD za svaki slučaj
   let yyyyMmDd = raw ? String(raw).slice(0, 10) : null;
 
   return {
     ...payload,
-    // uvek eksplicitno šaljemo sva tri
     target_date: yyyyMmDd,
     due_date: yyyyMmDd,
     deadline: yyyyMmDd,

@@ -1,3 +1,5 @@
+// src/components/ui/Modal.jsx
+
 export default function Modal({ open, title, children, onClose }) {
   if (!open) return null;
   return (

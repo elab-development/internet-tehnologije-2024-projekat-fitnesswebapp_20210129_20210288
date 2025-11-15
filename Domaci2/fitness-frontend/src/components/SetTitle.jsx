@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+// Postavlja title stranice
 export default function SetTitle({ title }) {
   useEffect(() => {
     const prev = document.title;

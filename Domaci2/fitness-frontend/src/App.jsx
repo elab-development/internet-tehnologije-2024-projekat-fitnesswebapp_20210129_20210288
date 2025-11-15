@@ -90,7 +90,7 @@ export default function App() {
           }
         />
 
-        {/* NOVO: Exercises (lista vidljiva member/admin; guest nema) */}
+        {/* Exercises (member/admin) */}
         <Route
           path="/exercises"
           element={
@@ -174,7 +174,7 @@ export default function App() {
           }
         />
 
-        {/* Fallback */}
+        {/* Ako pukne nešto */}
         <Route path="*" element={<div className="container section">Not found</div>} />
       </Routes>
     </div>
