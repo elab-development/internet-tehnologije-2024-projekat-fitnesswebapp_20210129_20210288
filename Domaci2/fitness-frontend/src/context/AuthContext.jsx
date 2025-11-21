@@ -1,3 +1,4 @@
+// CUSTOM HOOK ZA AUTENTIFIKACIJU KORISNIKA
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import api, { setAuthToken } from "../api/client";
 
@@ -30,7 +31,7 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
-  // NOVO: registracija kroz backend /register
+  // registracija kroz backend /register
   const register = async ({ name, email, password, role = "member", fitness_level = "beginner" }) => {
     const { data } = await api.post("/register", { name, email, password, role, fitness_level });
     setToken(data.token);
@@ -41,7 +42,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await api.post("/logout"); } catch {}
+    try { await api.post("/logout"); } catch { }
     setToken("");
     setUser(null);
     localStorage.removeItem("token");
