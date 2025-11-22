@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import SetTitle from "../components/SetTitle";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import TextInput from "../components/ui/TextInput";
-import SelectInput from "../components/ui/SelectInput";
-import { createGoal, fetchGoal, updateGoal } from "../api/goals";
-import { fetchUsers } from "../api/admin";
+import SetTitle from "../../components/SetTitle";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import TextInput from "../../components/ui/TextInput";
+import SelectInput from "../../components/ui/SelectInput";
+import { createGoal, fetchGoal, updateGoal } from "../../api/goals";
+import { fetchUsers } from "../../api/admin";
 
 // Pomocne funkcije za tolerantno čitanje polja sa backenda
 function coalesceTitle(g) { return g?.title ?? g?.name ?? ""; }

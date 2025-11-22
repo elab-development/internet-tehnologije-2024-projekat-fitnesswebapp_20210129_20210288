@@ -2,13 +2,13 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
-import TextInput from "../components/ui/TextInput";
-import SelectInput from "../components/ui/SelectInput";
-import { fetchExercises, deleteExercise } from "../api/exercises";
-import { useAuth } from "../context/AuthContext";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
+import TextInput from "../../components/ui/TextInput";
+import SelectInput from "../../components/ui/SelectInput";
+import { fetchExercises, deleteExercise } from "../../api/exercises";
+import { useAuth } from "../../context/AuthContext";
 
 // Opcije za filtere i sortiranje
 const TYPE_OPTIONS = [

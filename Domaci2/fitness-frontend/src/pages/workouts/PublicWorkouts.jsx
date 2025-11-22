@@ -4,11 +4,11 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
-import { fetchWorkouts, deleteWorkout } from "../api/workouts";
-import { useAuth } from "../context/AuthContext";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
+import { fetchWorkouts, deleteWorkout } from "../../api/workouts";
+import { useAuth } from "../../context/AuthContext";
 
 export default function PublicWorkouts() {
   const { user } = useAuth();

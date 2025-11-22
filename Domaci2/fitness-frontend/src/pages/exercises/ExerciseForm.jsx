@@ -5,12 +5,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import TextInput from "../components/ui/TextInput";
-import SelectInput from "../components/ui/SelectInput";
-import { createExercise, fetchExercise, updateExercise } from "../api/exercises";
-import { fetchMyWorkouts } from "../api/workouts";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import TextInput from "../../components/ui/TextInput";
+import SelectInput from "../../components/ui/SelectInput";
+import { createExercise, fetchExercise, updateExercise } from "../../api/exercises";
+import { fetchMyWorkouts } from "../../api/workouts";
 
 const TYPE_OPTIONS = [
   { value: "cardio", label: "cardio" },

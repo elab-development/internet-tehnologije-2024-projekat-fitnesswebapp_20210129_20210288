@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
-import { fetchUsers, deleteUser } from "../api/admin";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
+import { fetchUsers, deleteUser } from "../../api/admin";
 
 export default function AdminUsers() {
   const [items, setItems] = useState([]);

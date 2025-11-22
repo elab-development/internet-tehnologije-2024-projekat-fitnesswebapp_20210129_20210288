@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import { fetchUserById } from "../api/admin";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import { fetchUserById } from "../../api/admin";
 
 export default function AdminUserDetail() {
   const { id } = useParams();

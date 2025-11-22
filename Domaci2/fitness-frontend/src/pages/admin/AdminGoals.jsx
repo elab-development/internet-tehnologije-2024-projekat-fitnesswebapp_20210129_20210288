@@ -6,12 +6,12 @@ import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 
 // UI komponente
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import Modal from "../components/ui/Modal";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Modal from "../../components/ui/Modal";
 
 // API
-import { fetchGoals, deleteGoal } from "../api/goals";
+import { fetchGoals, deleteGoal } from "../../api/goals";
 
 // Pomoćne funkcije za izvlačenje podataka iz ciljeva
 

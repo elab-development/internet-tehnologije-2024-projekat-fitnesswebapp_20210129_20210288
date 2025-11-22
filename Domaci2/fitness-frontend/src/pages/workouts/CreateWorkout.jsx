@@ -7,10 +7,10 @@
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import Card from "../components/ui/Card";
-import Button from "../components/ui/Button";
-import SelectInput from "../components/ui/SelectInput";
-import { createWorkout } from "../api/workouts";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import SelectInput from "../../components/ui/SelectInput";
+import { createWorkout } from "../../api/workouts";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
