@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Button from "../components/ui/Button";
-import Card from "../components/ui/Card";
-import TextInput from "../components/ui/TextInput";
-import SelectInput from "../components/ui/SelectInput";
+import { useAuth } from "../../context/AuthContext.jsx";
+import Button from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
+import TextInput from "../../components/ui/TextInput";
+import SelectInput from "../../components/ui/SelectInput";
 
 export default function Login() {
   const { login, loginGuest, register } = useAuth();

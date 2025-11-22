@@ -1,6 +1,6 @@
 // src/components/RoleRoute.jsx
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
 
 // Zaštićena ruta koja dozvoljava pristup samo korisnicima sa određenim rolama
 export default function RoleRoute({ allowed = [], children }) {

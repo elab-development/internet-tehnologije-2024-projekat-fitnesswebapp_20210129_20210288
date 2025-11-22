@@ -8,7 +8,7 @@ import Modal from "../../components/ui/Modal";
 import TextInput from "../../components/ui/TextInput";
 import SelectInput from "../../components/ui/SelectInput";
 import { fetchExercises, deleteExercise } from "../../api/exercises";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 // Opcije za filtere i sortiranje
 const TYPE_OPTIONS = [

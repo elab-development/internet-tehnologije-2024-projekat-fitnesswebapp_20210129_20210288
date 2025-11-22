@@ -1,30 +1,30 @@
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
+import Home from "./pages/home/Home.jsx";
+import Login from "./pages/login/Login.jsx";
 
-/* PUBLIC WORKOUTS (ovo već imaš) */
-import PublicWorkouts from "./pages/PublicWorkouts.jsx";
-import PublicWorkoutDetail from "./pages/PublicWorkoutDetail.jsx";
+/* PUBLIC WORKOUTS  */
+import PublicWorkouts from "./pages/workouts/PublicWorkouts.jsx";
+import PublicWorkoutDetail from "./pages/workouts/PublicWorkoutDetail.jsx";
 
-/* MY WORKOUTS (ovo već imaš) */
-import MyWorkouts from "./pages/MyWorkouts.jsx";
-import CreateWorkout from "./pages/CreateWorkout.jsx";
-import EditWorkout from "./pages/EditWorkout.jsx";
+/* MY WORKOUTS  */
+import MyWorkouts from "./pages/workouts/MyWorkouts.jsx";
+import CreateWorkout from "./pages/workouts/CreateWorkout.jsx";
+import EditWorkout from "./pages/workouts/EditWorkout.jsx";
 
 /* ZAŠTITA */
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import RoleRoute from "./components/RoleRoute.jsx";
 
 /* ADMIN */
-import AdminUsers from "./pages/AdminUsers.jsx";
-import AdminUserDetail from "./pages/AdminUserDetails.jsx";
-import AdminGoals from "./pages/AdminGoals.jsx";
-import AdminGoalForm from "./pages/AdminGoalForm.jsx";
+import AdminUsers from "./pages/admin/AdminUsers.jsx";
+import AdminUserDetail from "./pages/admin/AdminUserDetails.jsx";
+import AdminGoals from "./pages/admin/AdminGoals.jsx";
+import AdminGoalForm from "./pages/admin/AdminGoalForm.jsx";
 
-/* NOVO: EXERCISES STRANICE */
-import Exercises from "./pages/Exercises.jsx";
-import ExerciseForm from "./pages/ExerciseForm.jsx";
+/*EXERCISES */
+import Exercises from "./pages/exercises/Exercises.jsx";
+import ExerciseForm from "./pages/exercises/ExerciseForm.jsx";
 
 export default function App() {
   return (

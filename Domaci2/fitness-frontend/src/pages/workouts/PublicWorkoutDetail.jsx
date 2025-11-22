@@ -7,7 +7,7 @@ import { useParams, Link } from "react-router-dom";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import { fetchWorkout } from "../../api/workouts";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function PublicWorkoutDetail() {
   const { id } = useParams();

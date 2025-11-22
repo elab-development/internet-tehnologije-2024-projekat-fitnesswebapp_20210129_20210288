@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Modal from "../components/ui/Modal";
-import WeatherWidget from "../components/WeatherWidget";
-import logo from "../assets/logo.png";
+import { useAuth } from "../../context/AuthContext.jsx";
+import Modal from "../../components/ui/Modal";
+import WeatherWidget from "../../components/WeatherWidget";
+import logo from "../../assets/logo.png";
+
 
 export default function Home() {
   const { user } = useAuth();
