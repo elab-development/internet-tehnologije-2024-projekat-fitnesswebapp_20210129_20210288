@@ -1,8 +1,8 @@
-// src/pages/EditWorkout.jsx
-//
-// Stranica za IZMENU treninga (member/admin).
-// - GET /workouts/:id (čitamo detalj)
-// - PUT /users/workouts/:id (čuvamo izmene)
+/**
+ * EditWorkout - Izmena treninga
+ * Omogućava izmenu postojećeg treninga (member/admin)
+ * Koristi GET /workouts/:id i PUT /users/workouts/:id
+ */
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
@@ -10,19 +10,13 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import SelectInput from "../../components/ui/SelectInput";
 import { fetchWorkout, updateWorkout } from "../../api/workouts";
+import { parseNonNegativeNumber } from "../../utils/dataHelpers";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "started", label: "Started" },
   { value: "completed", label: "Completed" },
 ];
-
-/* "" -> null, broj >= 0 -> number, ostalo -> NaN */
-function toNonNegativeNumberOrNull(v) {
-  if (v === "" || v == null) return null;
-  const n = Number(v);
-  return Number.isFinite(n) && n >= 0 ? n : NaN;
-}
 
 export default function EditWorkout() {
   const nav = useNavigate();
@@ -64,9 +58,9 @@ export default function EditWorkout() {
   // validacija
   const { durationParsed, caloriesParsed, formError } = useMemo(() => {
     if (!name.trim()) return { durationParsed: null, caloriesParsed: null, formError: "Naziv je obavezan." };
-    const d = toNonNegativeNumberOrNull(duration);
+    const d = parseNonNegativeNumber(duration);
     if (Number.isNaN(d)) return { durationParsed: d, caloriesParsed: null, formError: "Trajanje mora biti nenegativan broj." };
-    const c = toNonNegativeNumberOrNull(calories);
+    const c = parseNonNegativeNumber(calories);
     if (Number.isNaN(c)) return { durationParsed: d, caloriesParsed: c, formError: "Kalorije moraju biti nenegativan broj." };
     return { durationParsed: d, caloriesParsed: c, formError: "" };
   }, [name, duration, calories]);

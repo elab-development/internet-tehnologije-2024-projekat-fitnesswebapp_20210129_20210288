@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Exercise;
 use App\Models\Workout;
 
+// Seeder za kreiranje vežbi i njihovo povezivanje sa treninzima
 class ExerciseSeeder extends Seeder
 {
     public function run()

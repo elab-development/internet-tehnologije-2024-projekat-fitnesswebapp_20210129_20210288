@@ -1,4 +1,9 @@
-// src/pages/PublicWorkouts.jsx
+/**
+ * MyWorkouts - Korisnički treninzi
+ * Prikazuje listu treninga trenutno prijavljenog korisnika (member/admin)
+ * Omogućava kreiranje, izmenu i brisanje ličnih treninga
+ */
+
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../components/ui/Card";
@@ -49,8 +54,8 @@ export default function PublicWorkouts() {
 
   return (
     <div className="container section">
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-        <h2 style={{ margin: 0 }}>Workouts</h2>
+      <div className="page-header">
+        <h2>Workouts</h2>
 
         {(role === "member" || role === "admin") && (
           <Link to="/workouts/new" className="btn">+ Novi trening</Link>
@@ -82,12 +87,12 @@ export default function PublicWorkouts() {
               <p style={{ opacity: 0.8, margin: "6px 0 10px" }}>
                 {w.description ?? "Bez opisa."}
               </p>
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div className="card-tags">
                 {w.duration != null && <span className="user-pill">{w.duration} min</span>}
                 {w.calories_burned != null && <span className="user-pill">{w.calories_burned} kcal</span>}
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              <div className="card-actions">
                 <Link to={`/workouts/${w.id}`} className="btn btn-outline">Detalj</Link>
 
                 {(role === "member" || role === "admin") && isOwner && (
@@ -114,7 +119,7 @@ export default function PublicWorkouts() {
         onClose={() => setConfirmId(null)}
       >
         <p>Da li sigurno želiš da obrišeš ovaj trening?</p>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+        <div className="modal-actions">
           <button className="btn btn-outline" onClick={() => setConfirmId(null)}>Ne</button>
           <button className="btn" onClick={doDelete}>Da, obriši</button>
         </div>

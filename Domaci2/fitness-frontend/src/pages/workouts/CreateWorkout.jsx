@@ -1,9 +1,9 @@
-// src/pages/CreateWorkout.jsx
-//
-// Stranica za KREIRANJE treninga (member/admin).
-// - POST /users/workouts
-// - Jednostavna validacija (naziv obavezan, brojevi >= 0)
-// - Nakon uspeha: redirect na /workouts
+/**
+ * CreateWorkout - Kreiranje novog treninga
+ * Omogućava kreiranje novog treninga (member/admin)
+ * Koristi POST /users/workouts
+ * Nakon uspeha preusmerava na /workouts
+ */
 
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
@@ -11,19 +11,13 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import SelectInput from "../../components/ui/SelectInput";
 import { createWorkout } from "../../api/workouts";
+import { parseNonNegativeNumber } from "../../utils/dataHelpers";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "started", label: "Started" },
   { value: "completed", label: "Completed" },
 ];
-
-/** Nenegativan broj ili null */
-function toNonNegativeNumberOrNull(v) {
-  if (v === "" || v == null) return null;
-  const n = Number(v);
-  return Number.isFinite(n) && n >= 0 ? n : NaN;
-}
 
 export default function CreateWorkout() {
   const nav = useNavigate();
@@ -41,8 +35,8 @@ export default function CreateWorkout() {
 
   // validacija
   const { durationParsed, caloriesParsed, formError } = useMemo(() => {
-    const d = toNonNegativeNumberOrNull(duration);
-    const c = toNonNegativeNumberOrNull(calories);
+    const d = parseNonNegativeNumber(duration);
+    const c = parseNonNegativeNumber(calories);
 
     if (!name.trim()) {
       return { durationParsed: d, caloriesParsed: c, formError: "Naziv je obavezan." };

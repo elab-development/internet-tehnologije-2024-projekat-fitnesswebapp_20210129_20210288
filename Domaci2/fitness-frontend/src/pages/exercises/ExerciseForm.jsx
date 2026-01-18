@@ -1,7 +1,8 @@
-// Forma za kreiranje/izmenu vežbe sa dropdown-om za "type".
-// - POST /exercises
-// - GET /exercises/:id
-// - PUT /exercises/:id
+/**
+ * ExerciseForm - Forma za vežbe
+ * Omogućava kreiranje nove ili izmenu postojeće vežbe
+ * Koristi POST /exercises (kreiranje) ili PUT /exercises/:id (izmena)
+ */
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";

@@ -1,4 +1,5 @@
-// Višekratno dugme – tri varijante, lepo radi sa index.css klasama.
+// src/components/ui/Button.jsx
+
 export default function Button({
   children,
   variant = "primary",   // primary | outline | ghost

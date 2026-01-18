@@ -1,4 +1,8 @@
-// src/pages/Home.jsx
+/**
+ * Home - Početna stranica
+ * Prikazuje dobrodošlicu, kontakt formu i weather widget
+ * Dostupno svim korisnicima
+ */
 
 import { useState } from "react";
 import { Link } from "react-router-dom";

@@ -1,5 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/NavBar.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import LoginGreeting from "./components/LoginGreeting.jsx";
 import Home from "./pages/home/Home.jsx";
 import Login from "./pages/login/Login.jsx";
 
@@ -177,6 +179,9 @@ export default function App() {
         {/* Ako pukne nešto */}
         <Route path="*" element={<div className="container section">Not found</div>} />
       </Routes>
+
+      <ScrollToTop />
+      <LoginGreeting />
     </div>
   );
 }

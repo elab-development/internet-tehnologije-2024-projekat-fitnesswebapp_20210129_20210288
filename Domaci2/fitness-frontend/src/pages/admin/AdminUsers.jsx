@@ -1,4 +1,8 @@
-// src/pages/AdminUsers.jsx
+/**
+ * AdminUsers - Upravljanje korisnicima
+ * Admin stranica za pregled liste svih korisnika
+ * Prikazuje osnovne informacije o korisnicima
+ */
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";

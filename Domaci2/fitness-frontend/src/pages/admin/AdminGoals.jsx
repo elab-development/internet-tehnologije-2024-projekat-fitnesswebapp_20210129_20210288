@@ -1,47 +1,22 @@
-// src/pages/AdminGoals.jsx
-//
-// Admin: pregled i osnovno upravljanje ciljevima (goals)
+/**
+ * AdminGoals - Upravljanje ciljevima
+ * Admin stranica za pregled i upravljanje ciljevima korisnika
+ * Omogućava kreiranje, izmenu i brisanje ciljeva
+ */
 
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-
-// UI komponente
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import Modal from "../../components/ui/Modal";
-
-// API
 import { fetchGoals, deleteGoal } from "../../api/goals";
-
-// Pomoćne funkcije za izvlačenje podataka iz ciljeva
-
-function pickTitle(goal) {
-  return goal?.title ?? goal?.name ?? goal?.goal ?? "(bez naziva)";
-}
-
-// Vraća opis cilja. Ako nema opisa, vraća "/".
-function pickDescription(goal) {
-  return goal?.description ?? "/";
-}
-
-// Vraća rok cilja (target_date, due_date, deadline, ...)
-function pickDate(goal) {
-  return goal?.target_date ?? goal?.due_date ?? goal?.deadline ?? goal?.targetDate ?? null;
-}
-
-// Vraća ime korisnika (ili ID) kome cilj pripada.
-function pickUser(goal) {
-  return goal?.user?.name ?? goal?.user_name ?? goal?.userId ?? goal?.user_id ?? "-";
-}
-
-// Vraća status cilja.
-function pickStatus(goal) {
-  return goal?.status ?? "-";
-}
-
-// Tabela ciljeva
-
-// Red u tabeli sa jednim ciljem i akcijama.
+import {
+  getGoalTitle,
+  getGoalDescription,
+  getGoalTargetDate,
+  getGoalUserName,
+  getGoalStatus,
+} from "../../utils/dataHelpers";
 function GoalsRow({ goal, onAskDelete, busyId }) {
   const id = goal?.id;
   const isBusy = String(busyId) === String(id);
@@ -49,25 +24,15 @@ function GoalsRow({ goal, onAskDelete, busyId }) {
   return (
     <tr style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
       <td style={{ padding: 8 }}>{id}</td>
-      <td style={{ padding: 8 }}>{pickTitle(goal)}</td>
-      <td
-        style={{
-          padding: 8,
-          maxWidth: 300,
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-          overflow: "hidden",
-        }}
-        title={pickDescription(goal)}
-      >
-        {pickDescription(goal)}
+      <td style={{ padding: 8 }}>{getGoalTitle(goal)}</td>
+      <td className="cell-truncate" title={getGoalDescription(goal)}>
+        {getGoalDescription(goal)}
       </td>
-      <td style={{ padding: 8 }}>{pickUser(goal)}</td>
-      <td style={{ padding: 8 }}>{pickDate(goal) ?? "-"}</td>
-
-      <td style={{ padding: 8 }}>{pickStatus(goal)}</td>
-
-      <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <td style={{ padding: 8 }}>{getGoalUserName(goal)}</td>
+      <td style={{ padding: 8 }}>{getGoalTargetDate(goal) ?? "-"}</td>
+      <td style={{ padding: 8 }}>{getGoalStatus(goal)}</td>
+      <td style={{ padding: 8 }}>
+        <div className="flex-row-wrap">
         <Link className="btn btn-outline" to={`/goals/${id}/edit`} state={{ goal }}>
           Uredi
         </Link>
@@ -79,6 +44,7 @@ function GoalsRow({ goal, onAskDelete, busyId }) {
         >
           {isBusy ? "Brišem…" : "Obriši"}
         </Button>
+        </div>
       </td>
     </tr>
   );

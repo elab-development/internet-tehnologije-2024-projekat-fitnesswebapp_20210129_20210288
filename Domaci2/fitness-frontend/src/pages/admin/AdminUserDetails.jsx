@@ -1,4 +1,8 @@
-// src/pages/AdminUserDetails.jsx
+/**
+ * AdminUserDetails - Detalji korisnika
+ * Admin stranica za pregled detaljnih informacija o jednom korisniku
+ * Prikazuje profile korisnika sa svim relevantnim podacima
+ */
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams, Link } from "react-router-dom";

@@ -1,4 +1,9 @@
-// Lista vežbi — sada koristi backend paginaciju i filtriranje (ali UI ostaje isti).
+/**
+ * Exercises - Lista vežbi
+ * Prikazuje listu vežbi sa paginacijom, filtriranjem i sortiranjem
+ * Koristi backend API za pagination, filter i sort
+ * Dostupno za member i admin korisnike
+ */
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -9,6 +14,7 @@ import TextInput from "../../components/ui/TextInput";
 import SelectInput from "../../components/ui/SelectInput";
 import { fetchExercises, deleteExercise } from "../../api/exercises";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { getExerciseWorkoutName } from "../../utils/dataHelpers";
 
 // Opcije za filtere i sortiranje
 const TYPE_OPTIONS = [
@@ -33,12 +39,6 @@ const PAGE_SIZE_OPTIONS = [
   { value: 20, label: "20" },
 ];
 
-// Vraća ime workouta ili njegov ID ako nema imena
-function pickWorkoutName(ex) {
-  return ex?.workout?.name ?? (ex?.workout_id != null ? `#${ex.workout_id}` : "-");
-}
-
-// Glavna komponenta
 export default function Exercises() {
   const { user } = useAuth();
   const role = user?.role;
@@ -249,18 +249,12 @@ export default function Exercises() {
                       <tr key={ex.id} style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
                         <td style={{ padding: 8 }}>{ex.id}</td>
                         <td style={{ padding: 8 }}>{ex.name ?? "-"}</td>
-                        <td style={{
-                          padding: 8,
-                          maxWidth: 360,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}>
+                        <td className="cell-truncate-wide">
                           {ex.description ?? "-"}
                         </td>
                         <td style={{ padding: 8 }}>{ex.reps_or_time ?? "-"}</td>
                         <td style={{ padding: 8 }}>{ex.type ?? "-"}</td>
-                        <td style={{ padding: 8 }}>{pickWorkoutName(ex)}</td>
+                        <td style={{ padding: 8 }}>{getExerciseWorkoutName(ex)}</td>
 
                         {(role === "member" || role === "admin") && (
                           <td style={{ padding: 8, display: "flex", gap: 8, flexWrap: "wrap" }}>

@@ -17,7 +17,7 @@ class ExerciseFactory extends Factory
             'workout_id' => Workout::factory(),
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
-            'reps_or_time' => $this->faker->numberBetween(5, 60), 
+            'reps_or_time' => $this->faker->numberBetween(5, 60),
             'type' => $this->faker->randomElement(['cardio', 'strength', 'flexibility']),
         ];
     }

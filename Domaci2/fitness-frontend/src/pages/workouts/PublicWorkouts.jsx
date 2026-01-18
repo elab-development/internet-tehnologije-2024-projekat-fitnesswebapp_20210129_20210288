@@ -1,6 +1,8 @@
-// src/pages/PublicWorkouts.jsx
-//
-// Lista treninga (guest/member/admin).
+/**
+ * PublicWorkouts - Javna lista treninga
+ * Prikazuje sve dostupne treninge za sve korisnike (guest/member/admin)
+ * Omogućava pregled, kreiranje, izmenu i brisanje treninga
+ */
 
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -53,8 +55,8 @@ export default function PublicWorkouts() {
 
   return (
     <div className="container section">
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-        <h2 style={{ margin: 0 }}>Workouts</h2>
+      <div className="page-header">
+        <h2>Workouts</h2>
 
         {(role === "member" || role === "admin") && (
           <Link to="/workouts/new" className="btn">+ Novi trening</Link>
@@ -87,13 +89,13 @@ export default function PublicWorkouts() {
                 {w.description ?? "Bez opisa."}
               </p>
 
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div className="card-tags">
                 {w.duration != null && <span className="user-pill">{w.duration} min</span>}
                 {w.calories_burned != null && <span className="user-pill">{w.calories_burned} kcal</span>}
                 {w.status && <span className="user-pill">Status: {w.status}</span>} {/* NOVO */}
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              <div className="card-actions">
                 <Link to={`/workouts/${w.id}`} className="btn btn-outline">Detalj</Link>
 
                 {(role === "member" || role === "admin") && isOwner && (
@@ -120,7 +122,7 @@ export default function PublicWorkouts() {
         onClose={() => setConfirmId(null)}
       >
         <p>Da li sigurno želiš da obrišeš ovaj trening?</p>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 12 }}>
+        <div className="modal-actions">
           <button className="btn btn-outline" onClick={() => setConfirmId(null)}>Ne</button>
           <button className="btn" onClick={doDelete}>Da, obriši</button>
         </div>

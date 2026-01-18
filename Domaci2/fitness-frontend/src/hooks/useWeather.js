@@ -1,4 +1,5 @@
 // CUSTOM HOOK ZA VREMENSKU PROGNOZU
+
 // src/hooks/useWeather.js
 import { useState, useCallback } from "react";
 import { getWeather } from "../api/weather";

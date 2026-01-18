@@ -14,10 +14,10 @@ class GoalFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => User::factory(), 
+            'user_id' => User::factory(),
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
-            'target_date' => $this->faker->dateTimeBetween('now', '+1 year'), 
+            'target_date' => $this->faker->dateTimeBetween('now', '+1 year'),
             'status' => $this->faker->randomElement(['pending', 'completed']),
         ];
     }

@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
     const raw = localStorage.getItem("user");
     return raw ? JSON.parse(raw) : null;
   });
+  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => { setAuthToken(token); }, [token]);
 
@@ -19,6 +20,7 @@ export function AuthProvider({ children }) {
     setUser(data.user);
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
+    setShowWelcome(true);
     return data.user;
   };
 
@@ -28,6 +30,7 @@ export function AuthProvider({ children }) {
     setUser({ ...data.user, email: "guest@example.test" });
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify({ ...data.user, email: "guest@example.test" }));
+    setShowWelcome(true);
     return data.user;
   };
 
@@ -38,6 +41,7 @@ export function AuthProvider({ children }) {
     setUser(data.user);
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
+    setShowWelcome(true);
     return data.user;
   };
 
@@ -50,8 +54,8 @@ export function AuthProvider({ children }) {
   };
 
   const value = useMemo(
-    () => ({ token, user, login, loginGuest, register, logout }),
-    [token, user]
+    () => ({ token, user, login, loginGuest, register, logout, showWelcome, setShowWelcome }),
+    [token, user, showWelcome]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

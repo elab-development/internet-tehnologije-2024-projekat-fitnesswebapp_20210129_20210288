@@ -1,3 +1,9 @@
+/**
+ * AdminGoalForm - Forma za ciljeve
+ * Omogućava kreiranje novog ili izmenu postojećeg cilja
+ * Admin funkcionalnost za upravljanje ciljevima korisnika
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SetTitle from "../../components/SetTitle";
@@ -7,22 +13,9 @@ import TextInput from "../../components/ui/TextInput";
 import SelectInput from "../../components/ui/SelectInput";
 import { createGoal, fetchGoal, updateGoal } from "../../api/goals";
 import { fetchUsers } from "../../api/admin";
+import { getGoalTitle, getGoalTargetDate } from "../../utils/dataHelpers";
 
-// Pomocne funkcije za tolerantno čitanje polja sa backenda
-function coalesceTitle(g) { return g?.title ?? g?.name ?? ""; }
-function coalesceDate(g) {
-  return (
-    g?.target_date ??
-    g?.due_date ??
-    g?.deadline ??
-    g?.deadline_at ??
-    g?.targetDate ??
-    g?.dueDate ??
-    ""
-  );
-}
-
-// pending / completed
+// Statusi ciljeva
 const STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "completed", label: "Completed" },
@@ -36,9 +29,9 @@ export default function AdminGoalForm() {
   const initialGoal = location.state?.goal || null;
 
   // forma
-  const [title, setTitle] = useState(coalesceTitle(initialGoal));
+  const [title, setTitle] = useState(getGoalTitle(initialGoal) || "");
   const [description, setDescription] = useState(initialGoal?.description ?? "");
-  const [targetDate, setTargetDate] = useState(coalesceDate(initialGoal)); // očekujemo "YYYY-MM-DD"
+  const [targetDate, setTargetDate] = useState(getGoalTargetDate(initialGoal) || ""); // očekujemo "YYYY-MM-DD"
   const [userId, setUserId] = useState(initialGoal?.user_id ?? initialGoal?.userId ?? "");
   const [status, setStatus] = useState(initialGoal?.status ?? "pending");
 
@@ -75,9 +68,9 @@ export default function AdminGoalForm() {
         setLoading(true);
         const g = await fetchGoal(id);
         if (!active) return;
-        setTitle(coalesceTitle(g));
+        setTitle(getGoalTitle(g) || "");
         setDescription(g?.description ?? "");
-        setTargetDate(coalesceDate(g));
+        setTargetDate(getGoalTargetDate(g) || "");
         setUserId(g?.user_id ?? g?.userId ?? "");
         setStatus(g?.status ?? "pending");
       } catch {

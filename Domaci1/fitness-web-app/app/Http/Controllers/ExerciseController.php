@@ -15,7 +15,12 @@ class ExerciseController extends Controller
 
         // Filtriranje po tipu (type=cardio/strength/flexibility)
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $type = strtolower(trim($request->type));  // uklanja razmake i velika slova
+            $allowedTypes = ['cardio', 'strength', 'flexibility'];
+
+            if (in_array($type, $allowedTypes, true)) {
+                $query->where('type', $type);
+            }
         }
 
         // Pretraga po nazivu/opisu 
@@ -23,7 +28,7 @@ class ExerciseController extends Controller
             $text = mb_strtolower($request->search, 'UTF-8');
             $query->where(function ($q) use ($text) {
                 $q->whereRaw('LOWER(name) LIKE ?', ["%{$text}%"])
-                  ->orWhereRaw('LOWER(description) LIKE ?', ["%{$text}%"]);
+                    ->orWhereRaw('LOWER(description) LIKE ?', ["%{$text}%"]);
             });
         }
 
@@ -95,7 +100,7 @@ class ExerciseController extends Controller
     public function update(Request $request, $id)
     {
         $exercise = Exercise::find($id);
-        
+
         if (!$exercise) {
             return response()->json(['message' => 'Exercise not found.'], 404);
         }
